@@ -307,15 +307,15 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
  <div class="hd"><span class="no">01</span><span class="tt"><span class="sec2">왜 SDP인가</span><span class="sep">|</span>BESS 차익거래는 왜 어려운가</span><span class="rule"></span></div>
  <div class="tag">왜 SDP인가</div>
  <div class="ins">지금의 충·방전이 다음 시간의 선택지를 바꾸고, 다음 시간의 가격은 아직 모른다</div>
- <div class="bd">
-  <div class="two" style="height:calc(100% - 54px)">
+ <div class="bd" style="display:flex;flex-direction:column;gap:10px">
+  <svg class="tr" id="tdil" width="1123" height="178" viewBox="0 0 1123 178" style="height:178px" role="img" aria-label="지금 120원에 팔지, t=3까지 기다릴지 고르는 갈림길: 지금 팔면 110 확정, 기다리면 180원일 때 170, 90원일 때 80, 평균 134"></svg>
+  <div class="two" style="flex:1;min-height:0;padding-bottom:54px">
    <div>
-    <div class="sub"><span class="num">1</span><span class="t">차익거래의 세 가지 어려움</span></div>
-    <div class="box" style="padding:12px 16px"><b class="em">원리</b>  쌀 때 충전, 비쌀 때 방전 · 수익 = 방전가격 − 충전가격 − 열화비용</div>
+    <div class="sub"><span class="num">1</span><span class="t">그림 속 세 가지 어려움</span></div>
     <ul class="ul">
-     <li><b>불확실성</b>: 다음 시간 SMP를 미리 알 수 없음</li>
-     <li><b>시간 연결</b>: 지금 방전하면 저장량(SoC)이 줄어 나중에 팔 것이 없음<span class="s">"지금 120원에 팔까, 3시간 뒤 180원을 기다릴까?"</span></li>
-     <li><b>물리 제약</b>: 용량(MWh)·출력(MW) 한계<span class="s">출력 제약은 예제에서 결과를 바꾸는 핵심 요인으로 다시 등장</span></li>
+     <li><b>불확실성</b>: $t=3$ 가격이 180원일지 90원일지 지금은 모른다</li>
+     <li><b>시간 연결</b>: 지금 팔면 배터리가 비어, 나중에 비싸져도 팔 전기가 없다</li>
+     <li><b>물리 제약</b>: 1시간에 팔 수 있는 양은 출력(MW)만큼<span class="s">예제에서 결과를 바꾸는 핵심 요인으로 다시 등장</span></li>
     </ul>
    </div>
    <div>
@@ -323,8 +323,8 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
     <table class="t">
      <thead><tr><th>접근법</th><th>불확실성</th><th>시간 연결</th><th>한계</th></tr></thead>
      <tbody>
-      <tr><td class="l">규칙 기반<br><span class="lbl">가격 &lt; 임계값이면 충전</span></td><td class="na">✕</td><td class="na">✕</td><td class="l">임계값 근거 없음</td></tr>
-      <tr><td class="l">결정론적 최적화<br><span class="lbl">예측가격 1개로 LP</span></td><td class="na">✕</td><td>○</td><td class="l">예측이 틀리면 대응 불가</td></tr>
+      <tr><td class="l">규칙 기반 <span class="lbl">(가격 &lt; 임계값이면 충전)</span></td><td class="na">✕</td><td class="na">✕</td><td class="l">임계값 근거 없음</td></tr>
+      <tr><td class="l">결정론적 최적화 <span class="lbl">(예측가격 1개)</span></td><td class="na">✕</td><td>○</td><td class="l">예측이 틀리면 대응 불가</td></tr>
       <tr><td class="k l">확률적 동적계획(SDP)</td><td class="best">○</td><td class="best">○</td><td class="l">상태가 많으면 계산 폭증</td></tr>
      </tbody>
     </table>
@@ -878,6 +878,42 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
     labs.forEach(function(l){svg.appendChild(l);});
     return {X:X,Y:Y};
   }
+  // 갈림길 (3쪽)
+  (function(){
+    var svg=document.getElementById('tdil');defs(svg);
+    function box(x,y,w,h,cls,lines,tc){svg.appendChild(E('rect',{x:x,y:y,width:w,height:h,rx:8,'class':'bx '+(cls||'')}));
+      lines.forEach(function(t,i){svg.appendChild(E('text',{x:x+w/2,y:y+h/2+5+(i-(lines.length-1)/2)*18,'text-anchor':'middle','class':(tc||'bt')+(cls&&cls.indexOf('on')>-1?' inv':'')},t));});}
+    // 출발
+    svg.appendChild(E('circle',{cx:92,cy:92,r:56,'class':'nd st'}));
+    svg.appendChild(E('text',{x:92,y:76,'text-anchor':'middle','class':'nt big'},'지금 (t=1)'));
+    svg.appendChild(E('text',{x:92,y:97,'text-anchor':'middle','class':'nt'},'가격 120원 확인'));
+    svg.appendChild(E('text',{x:92,y:116,'text-anchor':'middle','class':'ax2'},'저장 1 MWh'));
+    // 판다
+    arrow(svg,140,62,262,36,'d','d',0,0);
+    svg.appendChild(E('text',{x:196,y:36,'text-anchor':'middle','class':'lab d',style:'font-size:14px'},'지금 판다'));
+    box(266,14,210,44,'',['+110 확정 (120−10)']);
+    arrow(svg,476,36,528,36,'w','w',0,0);
+    box(532,14,300,44,'',['배터리 빈 채로 t=3 도착'],'bt');
+    svg.appendChild(E('text',{x:682,y:76,'text-anchor':'middle','class':'ax2'},'180원이 와도 팔 전기가 없다'));
+    // 기다린다
+    arrow(svg,142,118,300,136,'w','w',0,0);
+    svg.appendChild(E('text',{x:214,y:150,'text-anchor':'middle','class':'lab w',style:'font-size:14px'},'기다린다'));
+    svg.appendChild(E('circle',{cx:336,cy:136,r:34,'class':'nd',style:'stroke-dasharray:5 4'}));
+    svg.appendChild(E('text',{x:336,y:132,'text-anchor':'middle','class':'nt'},'t=3 가격'));
+    svg.appendChild(E('text',{x:336,y:150,'text-anchor':'middle','class':'nt',style:'font-size:16px'},'?'));
+    arrow(svg,368,124,452,108,'c','c',0,0);
+    arrow(svg,368,148,452,160,'d','d',0,0);
+    box(456,90,224,36,'',['180원 (확률 0.6) → +170'],'bt');
+    box(456,142,224,36,'',['90원 (확률 0.4) → +80'],'bt');
+    arrow(svg,680,108,726,128,'w','w',0,0);arrow(svg,680,160,726,140,'w','w',0,0);
+    box(730,112,102,44,'',['평균 134'],'bt');
+    // 비교
+    svg.appendChild(E('rect',{x:862,y:22,width:261,height:134,rx:10,'class':'bx on'}));
+    svg.appendChild(E('text',{x:992,y:60,'text-anchor':'middle','class':'bt inv',style:'font-size:18px'},'110 확정 vs 평균 134'));
+    svg.appendChild(E('text',{x:992,y:90,'text-anchor':'middle','class':'bt inv',style:'font-size:13.5px;font-weight:400'},'기다리면 평균은 높지만'));
+    svg.appendChild(E('text',{x:992,y:110,'text-anchor':'middle','class':'bt inv',style:'font-size:13.5px;font-weight:400'},'40% 확률로 80에 그친다'));
+    svg.appendChild(E('text',{x:992,y:138,'text-anchor':'middle','class':'bt inv',style:'font-size:13.5px'},'→ 이 비교를 매 칸마다 = SDP'));
+  })();
   // 상태 지도
   trellis(document.getElementById('tmap'),{W:640,H:370,padL:90,padT:56,padB:24,r:24,
     col:function(t){return t<4?'t = '+t:'끝 (t = 4)';},
