@@ -341,7 +341,7 @@ table.t.c.tight td,table.t.c.tight th{padding:5px 5px!important}
   <li>왜 SDP인가<small>가격을 알면 쉬운 문제, 모르면 어려운 문제가 되는 이유</small></li>
   <li>SDP 기초<small>상태 지도, 5가지 구성요소, Bellman 방정식, 후방귀납법</small></li>
   <li>BESS 3시간 예제<small>정식화 → t=3 → t=2 → t=1 → 가치 지도 → 정책표</small></li>
-  <li>정리<small>요약과 토론 문제</small></li>
+  <li>결과 해석<small>평균가격 계획 · SDP · 완전예측(사후최적) 비교</small></li>
  </ol>
  <div class="goal">세미나가 끝나면 상태표를 직접 채워 최적 충·방전 정책을 구할 수 있다</div>
  <div class="pg"></div>
@@ -792,34 +792,39 @@ table.t.c.tight td,table.t.c.tight th{padding:5px 5px!important}
  <div class="pg"></div>
 </section>
 
-<!-- 15 정리 -->
+<!-- 13 비교 -->
 <section class="slide">
- <div class="hd"><span class="no">04</span><span class="tt"><span class="sec2">정리</span><span class="sep">|</span>요약과 토론 문제</span><span class="rule"></span></div>
- <div class="tag">정리</div>
- <div class="ins">SDP의 결과물은 계획표가 아니라 정책표: 가격을 보고 그때그때 행동을 정한다</div>
+ <div class="hd"><span class="no">04</span><span class="tt"><span class="sec2">결과 해석</span><span class="sep">|</span>평균가격 계획 vs SDP vs 완전예측</span><span class="rule"></span></div>
+ <div class="tag">결과 해석</div>
+ <div class="ins">가격을 보고 반응하는 정책이 평균가격 고정계획보다 기대수익 8.4% 높다</div>
  <div class="bd">
-  <div class="two">
+  <div class="two" style="height:calc(100% - 54px)">
    <div>
-    <div class="sub"><span class="num">1</span><span class="t">요약</span></div>
+    <div class="sub"><span class="num">1</span><span class="t">8개 경로 확률가중 기대수익</span><small>단위: 천원</small></div>
+    <div class="hb">
+     <div class="r"><span>평균가격 계획</span><div class="tr"><div class="fl" style="width:74.4%;background:var(--g400)">134.0</div></div></div>
+     <div class="r"><span style="color:var(--navy)">SDP 정책</span><div class="tr"><div class="fl" style="width:80.7%;background:var(--navy)">145.2</div></div></div>
+     <div class="r"><span>완전예측 (상한)</span><div class="tr"><div class="fl" style="width:92.9%;background:var(--g600)">167.2</div></div></div>
+     <div class="axis"><span></span><div><span>0</span><span>60</span><span>120</span><span>180</span></div></div>
+    </div>
+    <table class="t">
+     <thead><tr><th>지표</th><th>정의</th><th>값</th></tr></thead>
+     <tbody>
+      <tr><td class="k l">적응의 가치</td><td class="l">SDP − 평균가격 계획</td><td class="v">+11.2 (8.4%)</td></tr>
+      <tr><td class="k l">EVPI</td><td class="l">완전예측 − SDP</td><td class="v">22.0</td></tr>
+     </tbody>
+    </table>
+   </div>
+   <div>
+    <div class="sub"><span class="num">2</span><span class="t">해석</span></div>
     <ul class="ul">
-     <li><b>SDP</b> = 상태 · 결정 · 불확실성 · 전이 · 보상을 Bellman 방정식으로 묶은 것</li>
-     <li><b>후방귀납법</b>: 마지막 시간부터 (SoC, 가격) 표를 채우고 확률로 평균</li>
-     <li><b>예제의 교훈</b><span class="s">출력 제약이 '싸도 충전 안 함'을 만든다 (한계가치 0)</span><span class="s">결과물은 계획표가 아니라 정책표</span></li>
-     <li><b>한계</b>: 상태가 늘면 계산량이 곱으로 증가 → 근사 기법 필요</li>
+     <li><b>평균가격 계획</b> (100 / 92 / 144원으로 최적화)<span class="s">결과: 대기 → 대기 → 방전. t=1의 기회를 모두 버림</span></li>
+     <li><b>선택권 가치의 소실</b>: 평균으로 계획하면 가격 변동이 주는 선택권 가치가 사라진다<span class="s">$\mathbb{E}[\max(\cdot)]\ \ge\ \max(\mathbb{E}[\cdot])$ (Jensen 부등식)</span></li>
+     <li><b>EVPI 22.0</b> = 예측을 완벽히 하면 더 벌 수 있는 상한<span class="s">가격예측 시스템에 이보다 많이 쓰면 손해</span></li>
     </ul>
    </div>
-   <div>
-    <div class="sub"><span class="num gy">2</span><span class="t">토론 문제</span><small>눌러서 답 확인</small></div>
-    <details><summary>① 열화비용이 30원/kWh로 오르면 t=1, 가격 80일 때 행동은?</summary>
-     <p><b>대기</b>로 바뀐다. $\Vb_1(1)=118.2$천원. 방전 마진이 줄어 t=2의 '하나 팔고 하나 더' 이점이 사라진다.</p></details>
-    <details><summary>② 남은 에너지를 100원/kWh로 평가(종료가치)하면?</summary>
-     <p>t=1 가격 80 → <b>충전</b>, 가격 120 → <b>대기</b>(방전에서 바뀜). 종료가치 설정이 정책을 바꾼다.</p></details>
-    <details><summary>③ 출력을 2 MW로 늘리면 기대수익은?</summary>
-     <p><b>193.4천원</b> (+48.2). t=3에 2 MWh를 한 번에 팔 수 있어 두 번째 MWh의 한계가치가 0에서 134로 오른다.</p></details>
-    <details><summary>④ 가격을 '보기 전'에 결정해야 한다면 Bellman 식은?</summary>
-     <p>$\max$와 $\mathbb{E}$의 순서가 바뀐다: $\Vb_t(s)=\max_a\mathbb{E}_p\big[r(a,p)+\Vb_{t+1}(s+a)\big]$. 정보가 늦게 오므로 가치는 같거나 낮아진다.</p></details>
-   </div>
   </div>
+  <div class="note"><b>주의</b>예제 수치는 교육용 가정값. 실제 SMP 분포, 효율 손실, 출력·용량 비율에 따라 크기는 달라진다</div>
  </div>
  <div class="pg"></div>
 </section>
