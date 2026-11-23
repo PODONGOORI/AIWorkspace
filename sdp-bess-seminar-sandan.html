@@ -212,7 +212,9 @@ svg.tr text{font-family:var(--sans);letter-spacing:-.3px}
 .hd .tt .sec2{font-weight:400}
 .hd .tt .sep{font-weight:300;margin:0 14px;color:var(--g700)}
 .hd .rule{border-bottom:2px solid var(--g200);margin-bottom:24px}
-.tag{right:72px;top:34px;font-size:13px;color:var(--muted);text-align:right;line-height:1.25}
+.tag{right:74px;top:51px;font-size:13px;color:var(--muted);text-align:right;line-height:1.25}
+svg.tr{width:100%;height:auto;max-width:100%}
+svg#tnode{height:272px}
 .ins{left:73px;right:72px;top:110px;min-height:60px;border-radius:8px;padding:10px 26px;font-size:16px;letter-spacing:-.4px}
 .ins::before{font-size:15px}
 .tb .ins{left:197px;right:68px}
@@ -423,7 +425,7 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
  <div class="tag">SDP 기초</div>
  <div class="ins">화살표마다 '지금 버는 돈 + 도착한 곳의 가치'를 더하고, 가장 큰 쪽을 고른다. 이것이 Bellman 식이다</div>
  <div class="bd" style="display:flex;flex-direction:column;gap:10px">
-  <svg class="tr" id="tnode" width="1123" height="272" viewBox="0 0 1152 300" role="img" aria-label="t=1, SoC 1, 가격 80원에서 충전·대기·방전 세 갈래의 값 비교"></svg>
+  <svg class="tr" id="tnode" width="1152" height="300" viewBox="0 0 1152 300" role="img" aria-label="t=1, SoC 1, 가격 80원에서 충전·대기·방전 세 갈래의 값 비교"></svg>
   <div class="eq sm">\[ V_1(1,\,80)=\max\Big\{\underbrace{-80+216}_{\text{충전}},\ \underbrace{0+134}_{\text{대기}},\ \underbrace{70+44.4}_{\text{방전}}\Big\}=136 \]</div>
   <div class="note"><b>핵심</b>도착 노드의 가치(216, 134, 44.4)를 먼저 알아야 지금 고를 수 있다 → 그래서 마지막 시간부터 거꾸로 푼다</div>
  </div>
