@@ -268,6 +268,25 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
 .toc2 li small{display:block;font-size:14px;color:var(--muted);margin-top:2px}
 .toc2 .goal{position:absolute;left:668px;right:72px;top:560px;background:var(--navy);color:var(--white);border-radius:8px;padding:14px 22px;font-size:16px;font-weight:700;line-height:1.4}
 .toc2 .goal::before{content:"\2713  "}
+
+/* 여백 채우기: 글씨 키움 */
+.ul{font-size:18px;gap:12px;line-height:1.5}
+.ul .s{font-size:15.5px;margin-top:3px}
+table.t{font-size:16px}
+table.t td,table.t th{padding:10px 10px}
+table.t.c td,table.t.c th{font-size:15px;padding:8px 7px}
+.sub span.t{font-size:20px}
+.sub .num,.sub .num.gy{font-size:20px}
+.note{font-size:16px;min-height:46px}
+.box h4{font-size:17px}
+.r7 .m{font-size:16px}.r7 .m small{font-size:14.5px}
+.hb .r{font-size:16px}
+details{font-size:16px;padding:12px 16px}
+.calc{font-size:16px}
+.mini svg.tr{height:150px;width:100%}
+table.t.c td,table.t.c th{font-size:14px!important;padding:8px 5px!important}
+.mini{margin-top:auto;display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--g200);padding-top:8px}
+svg#tnode{height:330px!important}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 
@@ -323,8 +342,8 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
     <table class="t">
      <thead><tr><th>접근법</th><th>불확실성</th><th>시간 연결</th><th>한계</th></tr></thead>
      <tbody>
-      <tr><td class="l">규칙 기반 <span class="lbl">(가격 &lt; 임계값이면 충전)</span></td><td class="na">✕</td><td class="na">✕</td><td class="l">임계값 근거 없음</td></tr>
-      <tr><td class="l">결정론적 최적화 <span class="lbl">(예측가격 1개)</span></td><td class="na">✕</td><td>○</td><td class="l">예측이 틀리면 대응 불가</td></tr>
+      <tr><td class="l">규칙 기반</td><td class="na">✕</td><td class="na">✕</td><td class="l">임계값 근거 없음</td></tr>
+      <tr><td class="l">결정론적 최적화</td><td class="na">✕</td><td>○</td><td class="l">예측이 틀리면 대응 불가</td></tr>
       <tr><td class="k l">확률적 동적계획(SDP)</td><td class="best">○</td><td class="best">○</td><td class="l">상태가 많으면 계산 폭증</td></tr>
      </tbody>
     </table>
@@ -364,7 +383,7 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
  <div class="bd">
   <div class="two w6" style="height:calc(100% - 54px)">
    <div>
-    <svg class="tr" id="tmap" width="640" height="370" viewBox="0 0 640 370" role="img" aria-label="시간 1~4, 저장량 0~2 상태 격자와 충전·대기·방전 화살표"></svg>
+    <svg class="tr" id="tmap" width="640" height="420" viewBox="0 0 640 420" role="img" aria-label="시간 1~4, 저장량 0~2 상태 격자와 충전·대기·방전 화살표"></svg>
     <div class="legend"><span><i></i>충전 (위로)</span><span><i class="w"></i>대기 (옆으로)</span><span><i class="d"></i>방전 (아래로)</span></div>
    </div>
    <div>
@@ -580,9 +599,10 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
      <div class="eq sm" style="background:none;border:0;padding:0">\[ \begin{aligned} \Vb_3(0)&=0.4\times0+0.6\times0=\mathbf{0}\\ \Vb_3(1)&=0.4\times80+0.6\times170=\mathbf{134}\\ \Vb_3(2)&=0.4\times80+0.6\times170=\mathbf{134} \end{aligned} \]</div>
     </div>
     <ul class="ul">
-     <li><b>관찰</b>: 2 MWh를 들고 t=3에 도착해도 1 MWh밖에 못 판다<span class="s">출력 1 MW × 1시간 = 1 MWh</span></li>
-     <li><b>두 번째 MWh의 한계가치</b> = $\Vb_3(2)-\Vb_3(1)=134-134=\mathbf{0}$</li>
+     <li><b>관찰</b>: 2 MWh를 들고 와도 1 MWh만 판다 (출력 1 MW)</li>
+     <li><b>두 번째 MWh 가치</b> = $\Vb_3(2)-\Vb_3(1)=\mathbf{0}$</li>
     </ul>
+    <div class="mini"><span class="lbl">상태 지도에서 이번 장이 채우는 열 (남색)</span><svg class="tr" id="tstep3" width="470" height="200" viewBox="0 0 470 200" role="img" aria-label="상태 지도에서 t=3 열을 계산하는 위치"></svg></div>
    </div>
   </div>
   <div class="note"><b>예고</b>이 한계가치 0이 t=2의 "싸도 충전하지 않음"을 만든다</div>
@@ -618,6 +638,7 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
      <li><b>SoC 1, 가격 140</b>: 방전 130 &lt; 대기 134<span class="s">지금 140원보다 t=3의 기대가치가 4천원 더 큼. 차이가 작아 열화비용·확률이 조금만 바뀌어도 뒤집힘</span></li>
      <li><b>SoC 2</b>: 가격과 무관하게 지금 1 MWh 방전<span class="s">남는 1 MWh는 t=3에 팔면 되므로 지금 파는 것이 공짜 이익</span></li>
     </ul>
+    <div class="mini"><span class="lbl">상태 지도에서 이번 장이 채우는 열 (남색)</span><svg class="tr" id="tstep2" width="470" height="200" viewBox="0 0 470 200" role="img" aria-label="상태 지도에서 t=2 열을 계산하는 위치"></svg></div>
    </div>
   </div>
  </div>
@@ -651,6 +672,7 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
      <li><b>가격 120 → 방전</b> (154.4)<span class="s">지금 110을 확정하고, 빈 배터리로 t=2의 60원 충전 기회(44.4)를 노림</span></li>
      <li><b>두 경우 모두 행동한다</b><span class="s">평균가격(100원)만 보면 t=1은 '애매한 시간'이지만, 가격을 확인한 뒤엔 어느 쪽이든 할 일이 있음</span></li>
     </ul>
+    <div class="mini"><span class="lbl">상태 지도에서 이번 장이 채우는 열 (남색)</span><svg class="tr" id="tstep1" width="470" height="200" viewBox="0 0 470 200" role="img" aria-label="상태 지도에서 t=1 열을 계산하는 위치"></svg></div>
    </div>
   </div>
   <div class="note"><b>계산량</b>3시간 × 6칸 × 최대 3행동 = 54개 값 비교로 정책 전체 완성</div>
@@ -667,7 +689,7 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
  <div class="bd">
   <div class="two w6" style="height:calc(100% - 54px)">
    <div>
-    <svg class="tr" id="tval" width="590" height="420" viewBox="0 0 590 420" role="img" aria-label="각 상태의 기대가치를 적은 격자: 시작 노드 145.2"></svg>
+    <svg class="tr" id="tval" width="590" height="470" viewBox="0 0 590 470" role="img" aria-label="각 상태의 기대가치를 적은 격자: 시작 노드 145.2"></svg>
    </div>
    <div>
     <ul class="ul">
@@ -703,7 +725,7 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
    <div>
     <div class="sub"><span class="num">2</span><span class="t">가격 경로를 골라 보세요</span></div>
     <div class="ctrl" id="ctrl"></div>
-    <svg class="tr" id="tsim" width="572" height="262" style="width:100%;height:auto" viewBox="0 0 572 262" role="img" aria-label="선택한 가격 경로에서 정책이 지나가는 길"></svg>
+    <svg class="tr" id="tsim" width="572" height="322" style="width:100%;height:auto" viewBox="0 0 572 322" role="img" aria-label="선택한 가격 경로에서 정책이 지나가는 길"></svg>
     <div class="res">
      <div class="on">SDP 정책<b id="r-sdp">–</b></div>
      <div>평균가격 계획<b id="r-det">–</b></div>
@@ -914,8 +936,17 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
     svg.appendChild(E('text',{x:992,y:110,'text-anchor':'middle','class':'bt inv',style:'font-size:13.5px;font-weight:400'},'40% 확률로 80에 그친다'));
     svg.appendChild(E('text',{x:992,y:138,'text-anchor':'middle','class':'bt inv',style:'font-size:13.5px'},'→ 이 비교를 매 칸마다 = SDP'));
   })();
+  // 단계별 미니 지도
+  [3,2,1].forEach(function(T){
+    var el=document.getElementById('tstep'+T);if(!el)return;
+    trellis(el,{W:470,H:200,padL:58,padT:36,padB:14,r:17,
+      col:function(t){return t<4?'t = '+t:'끝';},
+      edge:function(){return 'f';},
+      ncls:function(t){return t===T?'on':'';},
+      ntxt:function(t,v){return t>=T?String(Math.round(Vb[t][v]*10)/10):'';}});
+  });
   // 상태 지도
-  trellis(document.getElementById('tmap'),{W:640,H:370,padL:90,padT:56,padB:24,r:24,
+  trellis(document.getElementById('tmap'),{W:640,H:420,padL:90,padT:56,padB:24,r:24,
     col:function(t){return t<4?'t = '+t:'끝 (t = 4)';},
     edge:function(){return '';},
     elab:function(t,v,a){return (t===1&&v===1)?NAME[a]:null;},
@@ -924,7 +955,7 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
   // 가치 지도
   (function(){
     var svg=document.getElementById('tval');
-    var g=trellis(svg,{W:590,H:420,padL:80,padT:86,padB:30,r:30,big:true,
+    var g=trellis(svg,{W:590,H:470,padL:80,padT:86,padB:30,r:30,big:true,
       col:function(t){return t<4?'t = '+t:'끝';},
       edge:function(){return 'f';},
       ncls:function(t,v){return (t===1&&v===1)?'st':'';},
@@ -975,7 +1006,7 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
     var s=1,tot=0,pr=[],hl={},lab={},onN={'1|1':1};
     [1,2,3].forEach(function(t){var i=sel[t],p=P[t][i],a=pol[t+'|'+s+'|'+i],rv=r(a,p);pr.push(p);
       hl[t+'|'+s+'|'+a]=1;lab[t+'|'+s+'|'+a]=NAME[a]+' '+(rv>0?'+':'')+rv;s+=a;onN[(t+1)+'|'+s]=1;tot+=rv;});
-    trellis(document.getElementById('tsim'),{W:572,H:262,padL:62,padT:40,padB:16,r:17,
+    trellis(document.getElementById('tsim'),{W:572,H:322,padL:62,padT:40,padB:16,r:17,
       col:function(t){return t<4?'t = '+t+' · '+pr[t-1]+'원':'끝';},
       edge:function(t,s0,a){return hl[t+'|'+s0+'|'+a]?'hl':'f';},
       elab:function(t,s0,a){return lab[t+'|'+s0+'|'+a]||null;},
@@ -989,6 +1020,42 @@ details{background:var(--white);border-radius:10px;box-shadow:0 1px 4px rgba(0,0
 
   var CIR=['','\u2460','\u2461','\u2462','\u2463'];document.querySelectorAll('.sub .num').forEach(function(n){n.textContent=CIR[+n.textContent]||n.textContent;});
   slides.forEach(function(sl,k){var pg=sl.querySelector('.pg');if(pg)pg.textContent=k+1;});
+
+
+  /* ---- 아래 여백 채우기: 칸마다 남는 높이를 표·목록·간격에 나눠 준다 ---- */
+  function botOf(el,base){var y=0,n=el;while(n&&n!==base){y+=n.offsetTop;n=n.offsetParent;}return y+el.offsetHeight;}
+  function topOf(el,base){var y=0,n=el;while(n&&n!==base){y+=n.offsetTop;n=n.offsetParent;}return y;}
+  var FILLED=[];
+  function fillAll(){
+    FILLED.forEach(function(f){f.el.style[f.k]='';});FILLED=[];
+    function setS(el,k,v){FILLED.push({el:el,k:k});el.style[k]=v;}
+    slides.forEach(function(sl){
+      var bd=sl.querySelector('.bd');if(!bd||bd.dataset.nofill!=null)return;
+      bd.style.position='absolute';
+      var note=bd.querySelector(':scope > .note');
+      var limit=note?topOf(note,bd)-14:bd.clientHeight;
+      var cols=[].slice.call(bd.querySelectorAll(':scope > .two > div, :scope > div > .two > div'));
+      if(!cols.length)cols=[bd];
+      cols.forEach(function(c){
+        function contentBottom(){var m=0;[].forEach.call(c.children,function(ch){if(ch===note||ch.classList.contains('two'))return;m=Math.max(m,botOf(ch,bd));});return m;}
+        var gap=limit-contentBottom();if(gap<8)return;
+        var tables=[].slice.call(c.querySelectorAll(':scope > table.t, :scope > div > table.t')).filter(function(t){return !t.closest('.colbd');});
+        var uls=[].slice.call(c.querySelectorAll(':scope > ul.ul'));
+        if(tables.length){var share=(uls.length?0.6:0.85)*gap/tables.length;tables.forEach(function(t){setS(t,'height',(t.offsetHeight+share)+'px');});}
+        gap=limit-contentBottom();
+        if(gap>60&&uls.length){var fs=Math.min(20,18+gap/60);uls.forEach(function(u){setS(u,'fontSize',fs+'px');});gap=limit-contentBottom();}
+        if(gap>8&&uls.length){var nli=0;uls.forEach(function(u){nli+=Math.max(1,u.children.length-1);});
+          var add=Math.min(30,gap*0.8/nli);uls.forEach(function(u){setS(u,'gap',(12+add)+'px');});}
+        gap=limit-contentBottom();
+        var kids=[].filter.call(c.children,function(ch){return ch!==note&&ch.offsetHeight>0;});
+        if(gap>8&&kids.length>1&&c!==bd){var g0=parseFloat(getComputedStyle(c).rowGap)||0;setS(c,'gap',(g0+Math.min(36,gap/(kids.length-1)))+'px');}
+        else if(gap>8&&c===bd&&getComputedStyle(bd).display==='flex'&&kids.length>1){var g1=parseFloat(getComputedStyle(bd).rowGap)||0;setS(bd,'gap',(g1+Math.min(40,gap/(kids.length-1)))+'px');}
+      });
+    });
+  }
+  function runFill(){try{fillAll();}catch(e){}}
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(runFill);}else{addEventListener('load',runFill);}
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){setTimeout(runFill,50);});
 
   /* scaling */
   function fit(){
