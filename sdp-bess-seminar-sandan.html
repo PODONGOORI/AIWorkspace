@@ -341,7 +341,7 @@ table.t.c.tight td,table.t.c.tight th{padding:5px 5px!important}
   <li>왜 SDP인가<small>가격을 알면 쉬운 문제, 모르면 어려운 문제가 되는 이유</small></li>
   <li>SDP 기초<small>상태 지도, 5가지 구성요소, Bellman 방정식, 후방귀납법</small></li>
   <li>BESS 3시간 예제<small>정식화 → t=3 → t=2 → t=1 → 가치 지도 → 정책표</small></li>
-  <li>결과와 확장<small>평균가격 계획·완전예측 비교, 실전 확장, 토론 문제</small></li>
+  <li>정리<small>요약과 토론 문제</small></li>
  </ol>
  <div class="goal">세미나가 끝나면 상태표를 직접 채워 최적 충·방전 정책을 구할 수 있다</div>
  <div class="pg"></div>
@@ -532,7 +532,7 @@ table.t.c.tight td,table.t.c.tight th{padding:5px 5px!important}
     </table>
     <ul class="ul">
      <li><b>상태변수 1개 추가</b> → 계산량이 '구간 수'배로 곱해짐<span class="s">배터리 1기는 PC로 수 초, 3기 이상은 근사가 필요</span></li>
-     <li><b>대응</b>: SDDP(볼록 문제), 근사 DP·강화학습 (04장에서 다시)</li>
+     <li><b>대응</b>: SDDP(볼록 문제), 근사 DP·강화학습</li>
     </ul>
    </div>
   </div>
@@ -792,81 +792,11 @@ table.t.c.tight td,table.t.c.tight th{padding:5px 5px!important}
  <div class="pg"></div>
 </section>
 
-<!-- 13 비교 -->
-<section class="slide">
- <div class="hd"><span class="no">04</span><span class="tt"><span class="sec2">결과와 확장</span><span class="sep">|</span>평균가격 계획 vs SDP vs 완전예측</span><span class="rule"></span></div>
- <div class="tag">결과와 확장</div>
- <div class="ins">가격을 보고 반응하는 정책이 평균가격 고정계획보다 기대수익 8.4% 높다</div>
- <div class="bd">
-  <div class="two" style="height:calc(100% - 54px)">
-   <div>
-    <div class="sub"><span class="num">1</span><span class="t">8개 경로 확률가중 기대수익</span><small>단위: 천원</small></div>
-    <div class="hb">
-     <div class="r"><span>평균가격 계획</span><div class="tr"><div class="fl" style="width:74.4%;background:var(--g400)">134.0</div></div></div>
-     <div class="r"><span style="color:var(--navy)">SDP 정책</span><div class="tr"><div class="fl" style="width:80.7%;background:var(--navy)">145.2</div></div></div>
-     <div class="r"><span>완전예측 (상한)</span><div class="tr"><div class="fl" style="width:92.9%;background:var(--g600)">167.2</div></div></div>
-     <div class="axis"><span></span><div><span>0</span><span>60</span><span>120</span><span>180</span></div></div>
-    </div>
-    <table class="t">
-     <thead><tr><th>지표</th><th>정의</th><th>값</th></tr></thead>
-     <tbody>
-      <tr><td class="k l">적응의 가치</td><td class="l">SDP − 평균가격 계획</td><td class="v">+11.2 (8.4%)</td></tr>
-      <tr><td class="k l">EVPI</td><td class="l">완전예측 − SDP</td><td class="v">22.0</td></tr>
-     </tbody>
-    </table>
-   </div>
-   <div>
-    <div class="sub"><span class="num">2</span><span class="t">해석</span></div>
-    <ul class="ul">
-     <li><b>평균가격 계획</b> (100 / 92 / 144원으로 최적화)<span class="s">결과: 대기 → 대기 → 방전. t=1의 기회를 모두 버림</span></li>
-     <li><b>선택권 가치의 소실</b>: 평균으로 계획하면 가격 변동이 주는 선택권 가치가 사라진다<span class="s">$\mathbb{E}[\max(\cdot)]\ \ge\ \max(\mathbb{E}[\cdot])$ (Jensen 부등식)</span></li>
-     <li><b>EVPI 22.0</b> = 예측을 완벽히 하면 더 벌 수 있는 상한<span class="s">가격예측 시스템에 이보다 많이 쓰면 손해</span></li>
-    </ul>
-   </div>
-  </div>
-  <div class="note"><b>주의</b>예제 수치는 교육용 가정값. 실제 SMP 분포, 효율 손실, 출력·용량 비율에 따라 크기는 달라진다</div>
- </div>
- <div class="pg"></div>
-</section>
-
-<!-- 14 확장 -->
-<section class="slide">
- <div class="hd"><span class="no">04</span><span class="tt"><span class="sec2">결과와 확장</span><span class="sep">|</span>현실 문제로의 확장</span><span class="rule"></span></div>
- <div class="tag">결과와 확장</div>
- <div class="ins">구조는 그대로 두고 상태·행동·전이를 현실적으로 바꾸면 된다. 대가는 계산량이다</div>
- <div class="bd">
-  <div class="two w6" style="height:calc(100% - 54px)">
-   <div>
-    <div class="sub"><span class="num">1</span><span class="t">예제 가정 → 현실</span></div>
-    <table class="t">
-     <thead><tr><th>예제 가정</th><th>현실 확장</th><th>모델에서 바뀌는 곳</th></tr></thead>
-     <tbody>
-      <tr><td class="k l">효율 100%</td><td class="l">충·방전 효율 $\eta_c,\ \eta_d$ (왕복 85~90%)</td><td class="l">전이식 · 보상식</td></tr>
-      <tr><td class="k l">SoC 3단계</td><td class="l">연속 SoC</td><td class="l">격자 세분화 + 보간</td></tr>
-      <tr><td class="k l">가격 독립</td><td class="l">가격 자기상관 (마르코프 체인)</td><td class="l">상태에 전 시간 가격 추가</td></tr>
-      <tr><td class="k l">3시간</td><td class="l">24시간 × 15분 = 96단계</td><td class="l">단계 수</td></tr>
-      <tr><td class="k l">에너지시장 1개</td><td class="l">에너지 + 예비력 동시 입찰</td><td class="l">행동 차원 증가</td></tr>
-      <tr><td class="k l">종료가치 0</td><td class="l">다음 날 기대가치</td><td class="l">$V_{T+1}$</td></tr>
-     </tbody>
-    </table>
-   </div>
-   <div>
-    <div class="sub"><span class="num">2</span><span class="t">계산량을 줄이는 세 갈래</span></div>
-    <div><div class="colhd nv">SDDP (Stochastic Dual DP)</div><div class="colbd"><ul class="ul" style="font-size:14px"><li>가치함수가 볼록이면 절편평면(cut)으로 근사</li><li>수력·ESS 장기운영의 표준 도구</li></ul></div></div>
-    <div><div class="colhd">근사 DP (ADP)</div><div class="colbd"><ul class="ul" style="font-size:14px"><li>가치함수를 회귀식·신경망으로 근사</li></ul></div></div>
-    <div><div class="colhd">강화학습</div><div class="colbd"><ul class="ul" style="font-size:14px"><li>Q-learning = Bellman 방정식의 표본 버전</li><li>분포를 몰라도 데이터로 학습, 대신 수렴·안전성 검증이 어렵다</li></ul></div></div>
-   </div>
-  </div>
-  <div class="note"><b>연결고리</b>세 방법 모두 '$\Vb_{t+1}(s')$를 어떻게 계산·근사하느냐'의 차이다</div>
- </div>
- <div class="pg"></div>
-</section>
-
 <!-- 15 정리 -->
 <section class="slide">
- <div class="hd"><span class="no">04</span><span class="tt"><span class="sec2">결과와 확장</span><span class="sep">|</span>요약과 토론 문제</span><span class="rule"></span></div>
- <div class="tag">결과와 확장</div>
- <div class="ins">결과물은 계획표가 아니라 정책표: 적응의 가치 +11.2, 완전예측 상한까지 22.0</div>
+ <div class="hd"><span class="no">04</span><span class="tt"><span class="sec2">정리</span><span class="sep">|</span>요약과 토론 문제</span><span class="rule"></span></div>
+ <div class="tag">정리</div>
+ <div class="ins">SDP의 결과물은 계획표가 아니라 정책표: 가격을 보고 그때그때 행동을 정한다</div>
  <div class="bd">
   <div class="two">
    <div>
