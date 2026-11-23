@@ -1,0 +1,802 @@
+<title>산단형 분산에너지 통합운영체계</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: 16:9 보고서형 슬라이드(남색 헤더바 + 헤드메시지 박스 + 개조식 본문 + 하단 쪽번호). sdp-bess-seminar.html 양식 그대로, 인쇄물 느낌의 단일 라이트 테마. */
+:root{
+  --navy:#14306b;      /* 헤더·표 머리 */
+  --blue:#2a62c4;      /* 강조 텍스트·선 */
+  --teal:#0f9b7a;      /* 보조 강조 */
+  --sky:#eaf1fb;       /* 헤드메시지 바탕 */
+  --mint:#e3f5ef;      /* 강조 셀 바탕 */
+  --amber:#c2580a;     /* 주의 */
+  --ink:#1b2230;       /* 본문 */
+  --mute:#5b6577;      /* 캡션 */
+  --line:#cfd7e4;      /* 표 선 */
+  --paper:#ffffff;
+  --desk:#dfe4ec;      /* 슬라이드 바깥 */
+  --track:#eef1f6;     /* 막대 바탕 */
+  --stripe:#f6f8fc;    /* 표 짝수행 */
+  --boxbg:#fbfcfe;
+  --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--desk);color:var(--ink);font-family:var(--sans);margin:0}
+.deck{display:flex;flex-direction:column;align-items:center;gap:28px;
+  padding-block:24px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.slide{width:100%;max-width:1200px;aspect-ratio:16/9;background:var(--paper);position:relative;
+  container-type:inline-size;box-shadow:0 2px 14px rgba(20,48,107,.14);overflow:hidden}
+.in{position:absolute;inset:0;display:flex;flex-direction:column;font-size:1.48cqw;line-height:1.5;padding:2.6em 3em 2.2em}
+/* header */
+.sh{display:flex;align-items:flex-end;gap:.7em;padding-bottom:.45em;border-bottom:.22em solid var(--navy);position:relative}
+.sh::after{content:"";position:absolute;left:0;right:0;bottom:-.5em;height:.08em;background:var(--teal)}
+.sec{background:var(--navy);color:#fff;font-weight:700;font-size:1.05em;min-width:2.1em;height:1.75em;display:grid;place-items:center;padding:0 .4em}
+.sh h2{margin:0;font-size:1.75em;font-weight:900;letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
+.sh .tag{margin-left:auto;color:var(--mute);font-size:.85em;font-weight:500;white-space:nowrap}
+.hm{margin-top:1.15em;background:var(--sky);border:.08em solid #b9cdee;border-radius:.35em;padding:.55em 1em;font-weight:700;font-size:1.06em;display:flex;gap:.8em;align-items:center}
+.hm b.k{background:var(--blue);color:#fff;font-size:.78em;padding:.15em .55em;border-radius:.2em;white-space:nowrap}
+.bd{flex:1;min-height:0;margin-top:1em;display:flex;gap:1.6em}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;gap:.7em}
+.sf{position:absolute;left:3em;right:3em;bottom:.9em;display:flex;justify-content:space-between;font-size:.72em;color:var(--mute);border-top:.06em solid var(--line);padding-top:.35em}
+.sf .pg{font-family:var(--mono);font-weight:600;color:var(--navy)}
+/* 개조식 */
+ul.g{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.35em}
+ul.g>li{padding-left:1.25em;position:relative}
+ul.g>li::before{content:"□";position:absolute;left:0;color:var(--navy);font-weight:700}
+ul.g>li>b:first-child{color:var(--navy)}
+ul.g ul{list-style:none;margin:.2em 0 0;padding:0;display:flex;flex-direction:column;gap:.15em}
+ul.g ul>li{padding-left:1.2em;position:relative;font-size:.94em}
+ul.g ul>li::before{content:"○";position:absolute;left:0;color:var(--blue)}
+ul.g ul ul>li::before{content:"-";color:var(--mute)}
+.note{font-size:.78em;color:var(--mute)}
+.src{font-size:.7em;color:var(--mute);margin:0}
+.em{color:var(--blue);font-weight:700}
+.ok{color:var(--teal);font-weight:700}
+.warn{color:var(--amber);font-weight:700}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* tables */
+table.t{border-collapse:collapse;width:100%;font-size:.86em;font-variant-numeric:tabular-nums}
+.t th{background:var(--navy);color:#fff;font-weight:500;padding:.32em .5em;border:.06em solid var(--navy)}
+.t td{border:.06em solid var(--line);padding:.28em .5em;text-align:center;vertical-align:middle}
+.t tbody tr:nth-child(even) td{background:var(--stripe)}
+.t td.l{text-align:left}
+.t td.rh{font-weight:700;color:var(--navy);background:var(--sky)!important;white-space:nowrap}
+.t td.best{background:var(--mint)!important;color:#0b6e56;font-weight:700}
+.t td.na{color:#b3bac6}
+.t td.v{font-weight:700;color:var(--navy)}
+.t.sm{font-size:.76em}
+.t.sm td{padding:.32em .45em;line-height:1.4}
+.t.lg{font-size:.9em}
+.t.lg td{padding:.55em .6em;line-height:1.5}
+/* boxes */
+.box{border:.08em solid var(--line);border-radius:.35em;padding:.6em .85em;background:var(--boxbg)}
+.box h4{margin:0 0 .35em;font-size:.95em;color:var(--navy)}
+.flow{display:flex;align-items:stretch;gap:.4em;font-size:.86em}
+.flow>div{flex:1;border:.08em solid var(--blue);border-radius:.3em;padding:.4em .3em;text-align:center;background:var(--paper)}
+.flow>span{align-self:center;color:var(--blue);font-weight:700}
+.flow .h{font-weight:700;color:var(--navy);display:block}
+/* cover */
+.cover .in{padding:0;justify-content:stretch}
+.cv-top{background:var(--navy);color:#fff;padding:4.2em 4em 2.6em;position:relative}
+.cv-top::after{content:"";position:absolute;left:0;right:0;bottom:-.35em;height:.35em;background:var(--teal)}
+.cv-top .ey{font-size:.95em;letter-spacing:.06em;opacity:.8}
+.cv-top h1{margin:.4em 0 .25em;font-size:3em;font-weight:900;line-height:1.15;letter-spacing:-.02em;text-wrap:balance}
+.cv-top p{margin:0;font-size:1.3em;opacity:.92}
+.cv-bot{flex:1;padding:2.2em 4em;display:flex;justify-content:space-between;align-items:flex-end;gap:2em}
+.cv-bot .kw{display:flex;gap:.5em;flex-wrap:wrap}
+.cv-bot .kw span{border:.08em solid var(--navy);color:var(--navy);padding:.2em .7em;font-size:.9em;font-weight:500}
+.cv-bot .who{text-align:right;color:var(--mute);font-size:1em;white-space:nowrap}
+.cv-bot .who b{color:var(--ink);font-size:1.15em}
+/* toc */
+.toc{display:grid;grid-template-columns:1fr 1fr;gap:1em 2em;margin-top:1.6em}
+.toc div{display:flex;gap:.9em;align-items:flex-start;border-bottom:.06em solid var(--line);padding-bottom:.8em}
+.toc .n{font-size:2.1em;font-weight:900;color:var(--navy);line-height:1;min-width:1.4em}
+.toc h3{margin:.1em 0 .2em;font-size:1.2em}
+.toc p{margin:0;color:var(--mute);font-size:.9em}
+/* bars */
+.bars{display:flex;flex-direction:column;gap:.45em}
+.bar{display:grid;grid-template-columns:7.5em 1fr;align-items:center;gap:.6em;font-size:.84em}
+.bar .tr{background:var(--track);height:1.45em;position:relative}
+.bar .fl{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:.45em;color:#fff;font-family:var(--mono);font-weight:600;background:#8a96ab}
+.bar .fl.hi{background:var(--navy)}
+.bar .fl.tl{background:var(--teal)}
+.bar .fl.am{background:var(--amber)}
+.bars.tight{gap:.28em}
+.bars.tight .bar .tr{height:1.25em}
+.chart-h{font-weight:700;color:var(--navy);font-size:.9em;margin:0}
+/* stat tiles */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.7em}
+.stat{border:.08em solid var(--line);border-top:.25em solid var(--navy);padding:.55em .7em;background:var(--boxbg)}
+.stat .lb{font-size:.8em;color:var(--mute);font-weight:500}
+.stat .big{font-family:var(--mono);font-size:2.1em;font-weight:600;color:var(--navy);line-height:1.1}
+.stat .sub{font-size:.76em;color:var(--mute);margin-top:.2em}
+.stat .sub b{color:var(--ink)}
+/* column chart */
+.cc{display:flex;flex-direction:column;gap:.3em}
+.cc .plot{display:grid;grid-template-columns:repeat(17,1fr);gap:.22em;height:11.5em;align-items:end;border-bottom:.08em solid var(--mute);position:relative}
+.cc .c{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.cc .c i{display:block;width:100%;background:var(--navy)}
+.cc .c i.pk{background:var(--teal)}
+.cc .c .s{font-family:var(--mono);font-size:.6em;color:var(--blue);font-weight:600;margin-bottom:.2em;white-space:nowrap}
+.cc .yrs{display:grid;grid-template-columns:repeat(17,1fr);gap:.22em;font-family:var(--mono);font-size:.58em;color:var(--mute);text-align:center}
+/* country cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.6em;font-size:.82em}
+.card{border:.08em solid var(--line);padding:.5em .7em;background:var(--boxbg);display:flex;flex-direction:column;gap:.25em}
+.card h4{margin:0;color:var(--navy);font-size:1.08em;display:flex;align-items:baseline;gap:.5em}
+.card h4 span{font-size:.8em;color:var(--mute);font-weight:500}
+.card ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:.1em}
+.card .imp{margin-top:auto;border-top:.06em dashed var(--line);padding-top:.25em;color:var(--teal);font-weight:700;font-size:.95em}
+/* stage columns */
+.stg{display:grid;grid-template-columns:repeat(3,1fr);gap:.8em}
+.stg>div{border:.08em solid var(--line);background:var(--boxbg);display:flex;flex-direction:column}
+.stg .sh2{background:var(--navy);color:#fff;padding:.35em .7em;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:.5em}
+.stg .sh2 span{font-weight:400;font-size:.8em;opacity:.85}
+.stg>div:nth-child(2) .sh2{background:var(--blue)}
+.stg>div:nth-child(3) .sh2{background:var(--teal)}
+.stg .bx{padding:.5em .7em;display:flex;flex-direction:column;gap:.4em;font-size:.86em;flex:1}
+.stg dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.25em .6em}
+.stg dt{font-weight:700;color:var(--navy);white-space:nowrap}
+.stg dd{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:.3em}
+.chips span{border:.06em solid var(--line);background:var(--paper);padding:.05em .45em;font-size:.88em}
+.arrow-band{display:flex;align-items:center;gap:.6em;font-size:.86em;color:var(--navy);font-weight:700}
+.arrow-band .ln{flex:1;height:.5em;background:linear-gradient(90deg,var(--sky),var(--navy));clip-path:polygon(0 30%,97% 30%,97% 0,100% 50%,97% 100%,97% 70%,0 70%)}
+/* actors */
+.act{display:grid;grid-template-columns:1fr 1fr;gap:.7em}
+.act .box{display:flex;flex-direction:column;gap:.3em}
+.act .box.lead{border-color:var(--navy);background:var(--sky)}
+.act .box h4{display:flex;justify-content:space-between;gap:.5em;margin:0}
+.act .box h4 span{font-weight:500;font-size:.85em;color:var(--blue)}
+/* nav */
+.nav{position:fixed;right:max(16px,calc(env(safe-area-inset-right,0px) + 16px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;z-index:5}
+.nav button{font:500 13px var(--sans);background:var(--navy);color:#fff;border:0;padding:8px 12px;border-radius:4px;cursor:pointer}
+.nav button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.nav .ct{background:#fff;color:var(--navy);font:600 13px var(--mono);padding:8px 10px;border-radius:4px;display:grid;place-items:center}
+body.present{overflow:hidden;background:#0d1a38}
+body.present .deck{padding:0;gap:0;height:100vh;height:100dvh;justify-content:center}
+body.present .slide{display:none;width:min(100vw,177.78vh);width:min(100vw,177.78dvh);max-width:none;box-shadow:none}
+body.present .slide.cur{display:block}
+.nav .pv,.nav .nx,.nav .ct{display:none}
+body.present .nav .pv,body.present .nav .nx,body.present .nav .ct{display:grid}
+@media (max-width:700px){.nav{gap:4px}.nav button{padding:7px 9px;font-size:12px}}
+</style>
+
+<div class="deck" id="deck">
+
+<!-- 1. 표지 -->
+<section class="slide cover">
+ <div class="in">
+  <div class="cv-top">
+   <div class="ey">산업단지 에너지전환 촉진을 위한 분산에너지 활성화 방안 공동 토론회</div>
+   <h1>산단형 분산에너지 통합운영체계<br>필요성 및 방향성 제언</h1>
+   <p>촉진자 → 운영자 → 산단형 DSO, 한국산업단지공단의 단계별 역할</p>
+  </div>
+  <div class="cv-bot">
+   <div class="kw"><span>탄소중립산단</span><span>분산에너지</span><span>통합운영 플랫폼</span><span>산단형 DSO</span><span>법·제도 개선</span></div>
+   <div class="who"><b>대한전기학회 박종배 학회장</b><br>건국대학교<br>2026. 8. 24. 국회 토론회 발표자료</div>
+  </div>
+ </div>
+</section>
+
+<!-- 2. 목차 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">목차</span><h2>Contents</h2><span class="tag">총 20쪽</span></header>
+  <div class="toc">
+   <div><span class="n">Ⅰ</span><div><h3>추진배경</h3><p>제조업·산업단지의 위상, 산업용 전력소비, 온실가스 배출, 부문별 감축경로</p></div></div>
+   <div><span class="n">Ⅱ</span><div><h3>국내·외 사례조사</h3><p>해외 6개국 산단 탈탄소 모델, 국내 구미산단 실증사업</p></div></div>
+   <div><span class="n">Ⅲ</span><div><h3>통합운영체계 제안</h3><p>단계별 분류·로드맵·역할, 핵심 이행사항, 운영주체 및 권한, 법·제도 현황과 개선</p></div></div>
+   <div><span class="n">Ⅳ</span><div><h3>시사점 및 결론</h3><p>소극적 → 중립적 → 적극적 모델로의 단계적 확장</p></div></div>
+  </div>
+  <div class="hm" style="margin-top:1.6em"><b class="k">제언</b>산단공이 산단 단위 분산에너지를 통합운영하는 주체로 단계적으로 역할을 확대해야 한다</div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">2</span></footer>
+ </div>
+</section>
+
+<!-- 3. 제조업 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅰ</span><h2>우리 경제와 제조업</h2><span class="tag">추진배경</span></header>
+  <div class="hm"><b class="k">핵심</b>세계 4위 수준의 제조업 경쟁력은 경기 둔화와 고용 위축을 막는 경제의 버팀목</div>
+  <div class="bd">
+   <div class="col">
+    <p class="chart-h">세계 제조업 경쟁력 지수 (UNIDO CIP, 2022)</p>
+    <div class="bars tight">
+     <div class="bar"><span>독일</span><div class="tr"><div class="fl" style="width:95%">0.38</div></div></div>
+     <div class="bar"><span>중국</span><div class="tr"><div class="fl" style="width:90%">0.36</div></div></div>
+     <div class="bar"><span>아일랜드</span><div class="tr"><div class="fl" style="width:87.5%">0.35</div></div></div>
+     <div class="bar"><span><b>한국 (4위)</b></span><div class="tr"><div class="fl hi" style="width:75%">0.30</div></div></div>
+     <div class="bar"><span>대만</span><div class="tr"><div class="fl" style="width:72.5%">0.29</div></div></div>
+    </div>
+    <p class="chart-h" style="margin-top:.4em">전 산업 내 제조업 비중 (2022, %)</p>
+    <div class="bars tight">
+     <div class="bar"><span><b>한국</b></span><div class="tr"><div class="fl hi" style="width:93%">27.9</div></div></div>
+     <div class="bar"><span>중국</span><div class="tr"><div class="fl" style="width:91.3%">27.4</div></div></div>
+     <div class="bar"><span>독일</span><div class="tr"><div class="fl" style="width:69.3%">20.8</div></div></div>
+     <div class="bar"><span>일본</span><div class="tr"><div class="fl" style="width:67.7%">20.3</div></div></div>
+    </div>
+   </div>
+   <div class="col">
+    <p class="chart-h">산업별 종사자 수 (2025년 2월, 천 명)</p>
+    <div class="bars tight">
+     <div class="bar"><span><b>제조업</b></span><div class="tr"><div class="fl hi" style="width:93.6%">3,744</div></div></div>
+     <div class="bar"><span>보건·사회복지</span><div class="tr"><div class="fl" style="width:58.8%">2,352</div></div></div>
+     <div class="bar"><span>도매·소매</span><div class="tr"><div class="fl" style="width:57.4%">2,294</div></div></div>
+     <div class="bar"><span>교육서비스</span><div class="tr"><div class="fl" style="width:39.3%">1,571</div></div></div>
+     <div class="bar"><span>건설</span><div class="tr"><div class="fl" style="width:36.6%">1,462</div></div></div>
+     <div class="bar"><span>전문·과학·기술</span><div class="tr"><div class="fl" style="width:32.8%">1,311</div></div></div>
+     <div class="bar"><span>사업시설·임대</span><div class="tr"><div class="fl" style="width:30.8%">1,233</div></div></div>
+     <div class="bar"><span>숙박·음식점</span><div class="tr"><div class="fl" style="width:29.4%">1,176</div></div></div>
+     <div class="bar"><span>공공행정</span><div class="tr"><div class="fl" style="width:22.9%">917</div></div></div>
+    </div>
+   </div>
+   <div class="col" style="flex:.8">
+    <table class="t sm">
+     <thead><tr><th>순위</th><th>2024 제조업 수출 품목</th><th>비중</th></tr></thead>
+     <tbody>
+      <tr><td>1</td><td class="l"><b>반도체</b></td><td class="v">20.9%</td></tr>
+      <tr><td>2</td><td class="l"><b>자동차</b></td><td class="v">13.4%</td></tr>
+      <tr><td>3</td><td class="l">석탄 및 석유제품</td><td>7.8%</td></tr>
+      <tr><td>4</td><td class="l">기초화학물질</td><td>5.5%</td></tr>
+      <tr><td>5</td><td class="l">일반목적용 기계</td><td>5.1%</td></tr>
+      <tr><td>6</td><td class="l">전기장비</td><td>5.0%</td></tr>
+      <tr><td>7</td><td class="l">철강 1차제품</td><td>4.2%</td></tr>
+      <tr><td>8</td><td class="l">전자표시장치</td><td>4.0%</td></tr>
+      <tr><td>9</td><td class="l">합성수지·합성고무</td><td>3.7%</td></tr>
+      <tr><td>10</td><td class="l">선박</td><td>3.5%</td></tr>
+     </tbody>
+    </table>
+    <p class="note" style="margin:0">상위 10개 품목이 제조업 수출의 <b>73.1%</b></p>
+   </div>
+  </div>
+  <p class="src">출처: 유엔산업개발기구(UNIDO); 고용노동부 2025년 사업체노동력조사(2025.3.27); 한국무역협회</p>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">3</span></footer>
+ </div>
+</section>
+
+<!-- 4. 산업단지 현황 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅰ</span><h2>산업단지 현황과 실태</h2><span class="tag">추진배경</span></header>
+  <div class="hm"><b class="k">핵심</b>전국 1,364개 산단이 제조업 생산 62.6%, 수출 66.9%, 고용 49.9%를 담당</div>
+  <div class="bd" style="flex-direction:column;gap:1em">
+   <table class="t">
+    <thead><tr><th style="width:12%">구분</th><th>국가산업단지</th><th>일반산업단지</th><th>도시첨단산업단지</th><th>농공단지</th></tr></thead>
+    <tbody>
+     <tr><td class="rh">목적</td><td>국가기간산업·과학기술산업 육성</td><td>산업의 분산, 지역경제 활성화</td><td>첨단산업 육성 및 개발 촉진</td><td>농어민 소득증대를 위한 산업 육성</td></tr>
+     <tr><td class="rh">관리권자</td><td>산업통상자원부장관<br><span class="note">(중앙행정기관 위탁 가능)</span></td><td>시·도지사</td><td>시·도지사</td><td>시·군·구청장</td></tr>
+     <tr><td class="rh">지정현황</td><td class="v">55개</td><td class="v">768개</td><td class="v">55개</td><td class="v">486개</td></tr>
+    </tbody>
+   </table>
+   <div class="stats">
+    <div class="stat"><div class="lb">생산 (2023)</div><div class="big">62.6%</div><div class="sub">산업단지 <b>1,249조 원</b> / 제조업 1,996조 원</div></div>
+    <div class="stat"><div class="lb">수출 (2023)</div><div class="big">66.9%</div><div class="sub">산업단지 <b>4,199억 달러</b> / 제조업 6,282억 달러</div></div>
+    <div class="stat"><div class="lb">고용 (2023)</div><div class="big">49.9%</div><div class="sub">산업단지 <b>2,073천 명</b> / 제조업 4,157천 명</div></div>
+   </div>
+   <ul class="g">
+    <li><b>산업경쟁력·지역 균형성장의 핵심 기반</b>: 지정현황 합계 1,364개 (’26년 1월 기준)
+     <ul><li>경남은 제조업 매출액 비중 47.1%, 종사자 수 비중 33.6%로 전국(28.3%, 19.6%)보다 높음 (’22년 기준)</li></ul></li>
+   </ul>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">4</span></footer>
+ </div>
+</section>
+
+<!-- 5. 산업용 전력소비 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅰ</span><h2>산업용 전력소비 현황</h2><span class="tag">추진배경</span></header>
+  <div class="hm"><b class="k">핵심</b>판매전력량 ’08년 385 → ’24년 550 TWh (+42.8%), 그중 산업용이 52.1~57.1%</div>
+  <div class="bd">
+   <div class="col" style="flex:1.35">
+    <p class="chart-h">산업용 판매전력량 (TWh, 막대)과 전체 대비 비중 (%, 막대 위)</p>
+    <div class="cc" id="cc">
+     <div class="plot" id="cc-plot"></div>
+     <div class="yrs" id="cc-yrs"></div>
+    </div>
+    <p class="note" style="margin:0">세로축 0~300 TWh. <span class="ok">초록</span> = 최고치 296.0 TWh (2022)</p>
+   </div>
+   <div class="col">
+    <table class="t sm">
+     <thead><tr><th>계약종별</th><th>2008</th><th>2024</th><th>증가율</th><th>’24 비중</th></tr></thead>
+     <tbody>
+      <tr><td class="l"><b>산업용</b></td><td>203.5</td><td class="v">286.2</td><td>+40.6%</td><td class="v">52.1%</td></tr>
+      <tr><td class="l">일반용</td><td>86.8</td><td>134.8</td><td>+55.3%</td><td>24.5%</td></tr>
+      <tr><td class="l">주택용</td><td>57.9</td><td>87.0</td><td>+50.3%</td><td>15.8%</td></tr>
+      <tr><td class="l">농사용</td><td>8.9</td><td>21.1</td><td>+137.1%</td><td>3.8%</td></tr>
+      <tr><td class="l">교육용</td><td>5.8</td><td>9.4</td><td>+62.1%</td><td>1.7%</td></tr>
+      <tr><td class="l">심야</td><td>19.4</td><td>7.9</td><td class="warn">−59.3%</td><td>1.4%</td></tr>
+      <tr><td class="l">가로등</td><td>2.8</td><td>3.4</td><td>+21.4%</td><td>0.6%</td></tr>
+      <tr class="sep"><td class="l"><b>합계</b></td><td>385.1</td><td class="v">549.8</td><td>+42.8%</td><td>100%</td></tr>
+     </tbody>
+    </table>
+    <ul class="g">
+     <li><b>산업용 비중</b>: ’14년 57.1% 정점 이후 하락
+      <ul><li>일반용·주택용이 더 빠르게 늘어난 결과로, 산업용 사용량은 ’17년 이후 278.7~296.0 TWh에서 정체</li></ul></li>
+    </ul>
+   </div>
+  </div>
+  <p class="src">출처: 한국에너지공단 EG-TIPS 「계약종별 전력사용량」(원자료: 한국전력공사), 2008~2024. 단위 TWh</p>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">5</span></footer>
+ </div>
+</section>
+
+<!-- 6. 온실가스 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅰ</span><h2>산업단지 온실가스 배출</h2><span class="tag">추진배경</span></header>
+  <div class="hm"><b class="k">핵심</b>산업단지는 국가 전력의 절반 이상을 소비하고, 온실가스의 약 40%를 배출하는 탄소 多배출 공간</div>
+  <div class="bd">
+   <div class="col">
+    <div class="stats" style="grid-template-columns:1fr 1fr">
+     <div class="stat"><div class="lb">산업부문 에너지 사용량 중 산단 비중 (’22)</div><div class="big">85%</div></div>
+     <div class="stat"><div class="lb">산업부문 온실가스 배출량 중 산단 비중 (’22)</div><div class="big">81%</div></div>
+     <div class="stat"><div class="lb">2021년 산업단지 온실가스 배출 규모</div><div class="big">268.4</div><div class="sub">MtCO₂eq</div></div>
+     <div class="stat"><div class="lb">산업·제조업 배출 중 산업단지 비중 (2021)</div><div class="big">약 78%</div></div>
+    </div>
+   </div>
+   <div class="col">
+    <p class="chart-h">탄소중립 중소기업 실태조사 (’25.2) — 탄소중립 추진 애로요인 응답 비율</p>
+    <div class="bars">
+     <div class="bar" style="grid-template-columns:10em 1fr"><span>시간적 여유 부족</span><div class="tr"><div class="fl am" style="width:85.3%">51.2%</div></div></div>
+     <div class="bar" style="grid-template-columns:10em 1fr"><span>자금·인력 부족</span><div class="tr"><div class="fl" style="width:52%">31.2%</div></div></div>
+     <div class="bar" style="grid-template-columns:10em 1fr"><span>검증된 기술·설비 부재</span><div class="tr"><div class="fl" style="width:38.7%">23.2%</div></div></div>
+    </div>
+    <p class="note" style="margin:0">막대 축: 0~60%</p>
+   </div>
+  </div>
+  <p class="src">출처: 한국산업단지공단 HAPPICOX Vol.67(2025); 이기평, 『산업단지의 탄소중립 실현을 위한 법제 연구』, 한국법제연구원(2023), p.40</p>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">6</span></footer>
+ </div>
+</section>
+
+<!-- 7. 감축경로 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅰ</span><h2>국가·전력·산업부문 탄소감축 경로</h2><span class="tag">추진배경</span></header>
+  <div class="hm"><b class="k">핵심</b>2030·2035 목표상 전력부문은 조기 급감, 산업부문은 상대적으로 완만한 감축경로</div>
+  <div class="bd" style="flex-direction:column;gap:.9em">
+   <table class="t">
+    <thead>
+     <tr><th rowspan="2">부문</th><th rowspan="2">’18년</th><th rowspan="2">’24년</th><th rowspan="2">’30년</th><th>2035 NDC</th><th>2040</th><th>2045</th><th rowspan="2">’50년</th></tr>
+     <tr><th>△53~61%</th><th>△69~80%</th><th>△84~90%</th></tr>
+    </thead>
+    <tbody>
+     <tr><td class="rh">국가 순배출량</td><td>742.3</td><td>651.4</td><td>436.6</td><td>348.9 ~ 289.5</td><td>230.1 ~ 148.5</td><td>118.8 ~ 74.2</td><td class="v">탄소중립</td></tr>
+     <tr><td class="rh">전력</td><td>283.0</td><td>218.3</td><td>145.9</td><td class="best">88.3 (△68.8%) ~ 70.0 (△75.3%)</td><td class="na">—</td><td class="na">—</td><td class="v">0</td></tr>
+     <tr><td class="rh">산업</td><td>276.3</td><td>250.9</td><td>230.7</td><td>209.1 (△24.3%) ~ 190.6 (△31.0%)</td><td class="na">—</td><td class="na">—</td><td class="v">0</td></tr>
+    </tbody>
+   </table>
+   <div class="bd" style="margin-top:0">
+    <div class="col">
+     <p class="chart-h">2018 → 2035 감축률 범위</p>
+     <div class="bars">
+      <div class="bar"><span>전력부문</span><div class="tr"><div class="fl hi" style="width:75.3%">68.8~75.3%</div></div></div>
+      <div class="bar"><span>산업부문</span><div class="tr"><div class="fl am" style="width:31%">24.3~31.0%</div></div></div>
+     </div>
+     <p class="note" style="margin:0">막대 끝 = 감축률 상단, 축 0~100%</p>
+    </div>
+    <div class="col">
+     <ul class="g">
+      <li><b>산업단지 = 산업부문과 전력부문의 교집합</b>
+       <ul><li>최종에너지 소비, 화석연료, 열·전기가 한 공간에 집중</li></ul></li>
+     </ul>
+     <p class="note" style="margin:0">단위: 백만 톤 CO₂eq. 감축률은 2018년 대비. 2035년 이후 전력·산업 경로는 2050년 0까지 직선 보간한 하한 경로이며 정부 공식 부문별 목표가 아님</p>
+    </div>
+   </div>
+  </div>
+  <p class="src">출처: 정부 2030 NDC·탄소중립기본계획; 한국경제(2026.7.22)</p>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">7</span></footer>
+ </div>
+</section>
+
+<!-- 8. 해외 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅱ</span><h2>해외 산업단지 탈탄소 모델 비교</h2><span class="tag">국내·외 사례조사</span></header>
+  <div class="hm"><b class="k">핵심</b>해외는 표준화·공동인프라·정책금융·산업공생 등 다양한 방식으로 산단형 탈탄소를 이미 추진 중</div>
+  <div class="bd">
+   <div class="cards" style="flex:1">
+    <div class="card"><h4>중국 <span>제로탄소 산업단지</span></h4>
+     <ul><li>재생에너지·ESS·VPP 통합 운영</li><li>’23 제로탄소 산단 실행표준 공동발표</li><li>설비업체·산업계 공동표준화로 실행경로 구체화</li></ul>
+     <div class="imp">공동표준화·디지털화 선도모델</div></div>
+    <div class="card"><h4>영국 <span>산업클러스터 탈탄소화</span></h4>
+     <ul><li>East Coast·HyNet에 CCUS·수소 217억 파운드 배정</li><li>산업클러스터가 배출량 약 50% 차지</li><li>정부-민간 PPP로 클러스터 단위 전환</li></ul>
+     <div class="imp">공동인프라 투자·금융설계</div></div>
+    <div class="card"><h4>일본 <span>GX 전략·산업단지 입지</span></h4>
+     <ul><li>청정전력 지역에 반도체·데이터센터 등 첨단산단 입지 유도</li><li>10년간 150조 엔 GX 투자, ’26.4월 GX-ETS 의무화</li><li>탈탄소 우수기업에 배출권 추가할당(최대 10%)</li></ul>
+     <div class="imp">정책금융 + 배출권거래 결합</div></div>
+    <div class="card"><h4>베트남 <span>생태산업단지(EIP)</span></h4>
+     <ul><li>UNIDO·MPI EIP 프로젝트에 73개사 참여</li><li>폐수·폐열·부산물을 기업 간 교환하는 산업공생 실행(12/18건)</li><li>자원순환으로 연 CO₂ 7만 500톤 절감</li></ul>
+     <div class="imp">국제기구 지원 + 법제화 확산</div></div>
+    <div class="card"><h4>덴마크 <span>GreenLab Skive</span></h4>
+     <ul><li>60ha 규제샌드박스, 풍력·태양광 80MW</li><li>SymbiosisNet™ 기반 자원순환·에너지 자립</li><li>P2X 연계, 일자리 100개 이상 창출</li></ul>
+     <div class="imp">규제샌드박스로 산단형 탈탄소 실증</div></div>
+    <div class="card"><h4>싱가포르 <span>Jurong Island</span></h4>
+     <ul><li>JTC·Keppel, 기존 공단 전력망·열망을 단계적으로 재편</li><li>300ha 저탄소에너지 부지 지정, DGC 8억 SGD 연계</li><li>수소·암모니아 파일럿 단계적 확대</li></ul>
+     <div class="imp">기존 공단의 단계적 탈탄소 전환 모델</div></div>
+   </div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">8</span></footer>
+ </div>
+</section>
+
+<!-- 9. 국내 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅱ</span><h2>국내 산단형 탈탄소 추진 사례: 구미산단</h2><span class="tag">국내·외 사례조사</span></header>
+  <div class="hm"><b class="k">핵심</b>구미산단은 실증사업을 완료했으나, 자립적 운영·확산 단계로의 전환은 아직 갈 길이 멀다</div>
+  <div class="bd">
+   <div class="col">
+    <table class="t">
+     <thead><tr><th>사업</th><th>기간</th><th>사업비</th></tr></thead>
+     <tbody>
+      <tr><td class="l"><b>스마트에너지 플랫폼 구축사업</b></td><td>2020~2022 (3년)</td><td class="v">70억 원</td></tr>
+      <tr><td class="l"><b>에너지 자급자족 인프라 구축사업</b></td><td>2022~2024 (3년)</td><td class="v">390억 원</td></tr>
+     </tbody>
+    </table>
+    <div class="flow">
+     <div><span class="h">플랫폼</span>2020~2022</div><span>→</span>
+     <div><span class="h">자급자족 인프라</span>2022~2024</div><span>→</span>
+     <div style="border-style:dashed;border-color:var(--amber)"><span class="h" style="color:var(--amber)">자립 운영·확산</span>미진입</div>
+    </div>
+    <div class="box"><h4>현재 위치</h4>구미시는 전국 법정동 전력사용량 <b>2위</b>로 에너지 집약도가 높아 자립형 전환이 시급하나, 현재는 개별 실증사업 단계에 머물러 있음</div>
+   </div>
+   <div class="col">
+    <ul class="g">
+     <li><b>한계 ① 입주기업 구조</b>: 영세기업(50인 미만) 비중 80% 이상
+      <ul><li>기업별 개별 전환 여력 부족</li></ul></li>
+     <li><b>한계 ② 외부 전력망 의존</b>: 전력수요 대부분을 외부 전력망에서 조달
+      <ul><li>가격·공급 리스크에 취약</li></ul></li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">9</span></footer>
+ </div>
+</section>
+
+<!-- 10. 단계별 분류 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>통합운영체계 단계별 분류</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>탄소중립산단 구축 시 산단공의 역할 시나리오에 따라 단계별 운영체계의 개념 모델 제시</div>
+  <div class="bd" style="flex-direction:column;gap:.7em">
+   <div class="stg">
+    <div><div class="sh2">1단계 <span>보급 지원</span></div>
+     <div class="bx">
+      <dl><dt>구조</dt><dd>산단공(지원·조정)이 보급·설치 지원, 운영은 제3자 운영사업자</dd>
+       <dt>자원</dt><dd><div class="chips"><span>지붕형 PV</span><span>ESS</span></div></dd>
+       <dt>기능</dt><dd>보급사업 지원·정보관리</dd></dl>
+      <ul class="g" style="margin-top:auto"><li>법적 부담이 작고 추진 용이</li><li>대상은 PV·ESS 중심</li></ul>
+     </div></div>
+    <div><div class="sh2">2단계 <span>협력형 통합운영(플랫폼)</span></div>
+     <div class="bx">
+      <dl><dt>구조</dt><dd>산단공 플랫폼 + VPP 사업자·한전·전력거래소·구역전기 협력</dd>
+       <dt>자원</dt><dd><div class="chips"><span>지붕형 PV</span><span>ESS</span><span>입주기업 DR</span><span>PPA/RE100</span></div></dd>
+       <dt>기능</dt><dd>운영데이터 수집·분석·공유, 일부 자원 운영·관리</dd></dl>
+      <ul class="g" style="margin-top:auto"><li>실증 및 단계적 확장에 적합</li><li>운영데이터 축적 가능</li></ul>
+     </div></div>
+    <div><div class="sh2">3단계 <span>통합운영(산단형 DSO)</span></div>
+     <div class="bx">
+      <dl><dt>구조</dt><dd>산단공이 배전계통(구역전기)·분산자원·부하를 통합운영하고 전력거래·유연성시장 참여</dd>
+       <dt>자원</dt><dd><div class="chips"><span>분산자원</span><span>부하</span><span>배전계통</span></div></dd>
+       <dt>기능</dt><dd>DER·부하·거래 통합관리, 유연성 자원 제공 및 수익 창출</dd></dl>
+      <ul class="g" style="margin-top:auto"><li>계통안정·유연성 확보 효과 큼</li><li class="warn">법·제도 부담 및 책임 증가</li></ul>
+     </div></div>
+   </div>
+   <div class="arrow-band"><span>역할·권한 확대</span><div class="ln"></div><span>통합운영 효과 ↑ / 제도·운영 부담 ↑</span></div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">10</span></footer>
+ </div>
+</section>
+
+<!-- 11. 로드맵 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>중장기 발전 로드맵</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>기존 탄소중립산단의 구축·운영과 신규 대상지 발굴을 병행하며 관리·운영체계를 단계적으로 고도화</div>
+  <div class="bd" style="flex-direction:column;gap:.7em">
+   <table class="t">
+    <thead><tr><th style="width:13%">구분</th><th>1단계 · 사업 기반 구축·확대</th><th>2단계 · 통합관리 정착</th><th>3단계 · 통합운영·확산</th></tr></thead>
+    <tbody>
+     <tr><td class="rh">유형</td><td class="v">사업 지원형</td><td class="v">통합관리·조정형</td><td class="v">주도·운영형</td></tr>
+     <tr><td class="rh">배전망 부문<br>공단 역할</td><td>보급지원 · 성과관리</td><td>협력형 통합운영 플랫폼</td><td>산단형 DSO 검토</td></tr>
+     <tr><td class="rh">운영범위</td><td class="l">분산자원/ESS 보급지원<br>입주기업 수요조사, 사업자 매칭</td><td class="l">분산자원/ESS 일부 운영정보 확보<br>VPP·구역전기·한전·기업 연계</td><td class="l">분산자원/ESS·부하·망 정보·시장 기능 통합운영</td></tr>
+     <tr><td class="rh">이행과제</td><td class="l">사업모델 체계화 · 관리기준 마련</td><td class="l">사업·자원 연계 · 통합관리체계 구축</td><td class="l">산단 에너지 통합운영 · 전국 확산체계 정착</td></tr>
+     <tr><td class="rh">운용자원</td><td class="l">PV/ESS, 금융, RE100, REGO</td><td class="l">효율/DR, 자가용 PV/ESS, 개발사업자 협력 강화</td><td class="l">분산자원, AIDC, 배전선로, 배전안정화설비(GFM, D-스태콤 등)</td></tr>
+    </tbody>
+   </table>
+   <ul class="g">
+    <li><b>병행 원칙</b>: [기존사업 구축·운영] + [신규사업 지속 확대]</li>
+   </ul>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">11</span></footer>
+ </div>
+</section>
+
+<!-- 12. 단계별 역할 요약 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>산단공 단계별 역할: 촉진자 → 운영자 → 규제사업자</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>탄소중립산단의 발전 단계에 따라 산단공 역할을 단계적으로 확대</div>
+  <div class="bd" style="flex-direction:column;gap:.8em">
+   <table class="t">
+    <thead><tr><th style="width:15%">기능</th><th>① 촉진자 (Facilitator)</th><th>② 운영자 (Operator)</th><th>③ 규제사업자 (Regulated DSO)</th></tr></thead>
+    <tbody>
+     <tr><td class="rh">핵심역할</td><td>사업 촉진 및 조정</td><td>통합관리 · 시장 참여</td><td class="best">산단형 DSO</td></tr>
+     <tr><td class="rh">자원관리</td><td>보급촉진 및 관리</td><td>운영플랫폼</td><td>통합운영 · 자원계획</td></tr>
+     <tr><td class="rh">시장참여</td><td>중개 및 지원</td><td>시장 직접참여</td><td>산단 내 거래 운영</td></tr>
+     <tr><td class="rh">배전관리</td><td>기관 간 협력 지원</td><td>계통 모니터링 강화</td><td>배전망 직접운영</td></tr>
+    </tbody>
+   </table>
+   <div class="arrow-band"><span>① 1단계</span><div class="ln"></div><span>② 2단계</span><div class="ln"></div><span>③ 3단계</span></div>
+   <div class="box" style="border-color:var(--amber)"><h4 style="color:var(--amber)">전제조건</h4>역할 확대에 필요한 <b>법·제도적 근거와 법적 지위</b> 확보가 단계 전환의 선결 과제</div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">12</span></footer>
+ </div>
+</section>
+
+<!-- 13. 단계별 역할 상세 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>단계별 역할 상세</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>중개자에서 등록사업자로, 다시 배전자산을 보유한 종합에너지사업자로 확장</div>
+  <div class="bd">
+   <table class="t lg" style="align-self:flex-start">
+    <thead><tr><th style="width:11%">기능</th><th>1단계 · 사업 기반 구축·확대<br><span style="opacity:.8">촉진자</span></th><th>2단계 · 통합관리 정착<br><span style="opacity:.8">운영자</span></th><th>3단계 · 통합운영·확산<br><span style="opacity:.8">규제사업자</span></th></tr></thead>
+    <tbody>
+     <tr><td class="rh">핵심역할</td><td class="l">산단 에너지사업의 발굴·연계·조정으로 분산에너지 활용 기반을 조성하는 촉진자</td><td class="l">산단 내 분산에너지 자원의 통합관리자로서 자원 운영과 에너지 거래에 적극 참여</td><td class="l">산단 특화 종합에너지사업자로 산단 전체 에너지 운영을 담당하고, 복수 산단으로 통합운영체계 확산</td></tr>
+     <tr><td class="rh">자원관리</td><td class="l">분산에너지 잠재량 조사, 설비 설치 지원, 보조금·금융 연계로 보급 촉진 및 관리체계 구축</td><td class="l">발전자원·ESS 통합 급전, 수요반응 자원화, 산단 내 자원의 VPP 연계로 직접관리·통합운영 기능 강화 및 운영플랫폼 구축</td><td class="l">자원계획, 예비력 확보, 통합급전, 에너지 거래를 포괄하는 산단 에너지자원 통합 관리·운영</td></tr>
+     <tr><td class="rh">시장참여·운영</td><td class="l">직접 참여자가 아닌 중개자로서 PPA 매칭·중개, 표준계약 체계 구축 등 거래 지원</td><td class="l">등록사업자로서 VPP 입찰, DR, 산단 내 에너지 거래에 직접 참여</td><td class="l">산단 내 거래운영, 망이용요금 산정 등 종합에너지사업 기능 수행</td></tr>
+     <tr><td class="rh">배전망관리</td><td class="l">계통접속 협의 대행, 접속여유 정보 제공 등 기관 간 협력 대응 지원</td><td class="l">단일 접속점 운영, 산단 내부망의 조류·전압 모니터링 기능 강화</td><td class="l">자체 배전자산 기반 접속승인, 혼잡관리, 정전복구, 공급책임 등 DSO 역할 수행</td></tr>
+    </tbody>
+   </table>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">13</span></footer>
+ </div>
+</section>
+
+<!-- 14. 핵심 이행사항 1 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>핵심 이행사항: 기반구축 → 협력운영 → 주도운영</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>운영대상을 공공지원 자원에서 산단 전체 분산자원·부하·망·시장으로 넓혀 간다</div>
+  <div class="bd" style="flex-direction:column;gap:.9em">
+   <table class="t">
+    <thead><tr><th style="width:13%">구분</th><th>1단계 · 기반구축</th><th>2단계 · 협력운영</th><th>3단계 · 주도운영</th></tr></thead>
+    <tbody>
+     <tr><td class="rh">운영대상</td><td>공공지원 태양광 · ESS</td><td>산단 분산자원 · 부하<br>+ 배전망 안정성 지표</td><td>분산자원 · 부하 · 망 · 시장 통합운영</td></tr>
+     <tr><td class="rh">핵심기능</td><td>통합 DB · 계측기반 자체자원 운영</td><td>ADMS · DERMS 연계<br>협조운전 · 유연성 조정</td><td>최적운영 · 거래<br>산단형 DSO 기능 검토</td></tr>
+     <tr><td class="rh">공단역할</td><td class="v">정보관리 · 운영기반</td><td class="v">운영계획 · 통합조정</td><td class="v">주도운영 · 전국확산</td></tr>
+    </tbody>
+   </table>
+   <div class="box"><h4>기대효과</h4>
+    <div class="flow">
+     <div><span class="h">재생에너지</span>수용능력 제고</div>
+     <div><span class="h">혼잡·출력제어</span>최소화</div>
+     <div><span class="h">전력비·탄소규제</span>대응</div>
+     <div><span class="h">산단 운영표준</span>확산</div>
+    </div>
+   </div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">14</span></footer>
+ </div>
+</section>
+
+<!-- 15. 핵심 이행사항 2 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>핵심 이행사항: 단기·중기·장기 기술·제도 과제</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>기술개발과 제도·조직 기반을 병행 검토하여 산단형 DSO 모델을 정착·확산</div>
+  <div class="bd">
+   <div class="stg" style="flex:1">
+    <div><div class="sh2">단기 <span>데이터·운영기반</span></div>
+     <div class="bx">
+      <ul class="g"><li>설비·계통 운영이력 DB화</li><li>D-SCADA·AMI·MDMS·SDIS 연계</li><li>통합관제·실증환경 및 협조규칙 구축</li><li>공통 데이터 기반 기능 실증 플랫폼</li></ul>
+      <table class="t sm" style="margin-top:auto"><thead><tr><th>데이터원</th><th>내용</th></tr></thead><tbody>
+       <tr><td>D-SCADA</td><td class="l">실시간 계측·상태</td></tr>
+       <tr><td>AMI·MDMS</td><td class="l">전력사용·부하</td></tr>
+       <tr><td>SDIS</td><td class="l">계통모델·토폴로지</td></tr>
+       <tr><td>DER 이력</td><td class="l">PV·ESS·DR 운영실적</td></tr></tbody></table>
+     </div></div>
+    <div><div class="sh2">중기 <span>통합관리·자원조정</span></div>
+     <div class="bx">
+      <ul class="g"><li>배전망 제약·망 내 예비력 기반 운영계획</li><li>순부하·재생에너지 예측</li><li>자원 실시간 급전·조정·시장거래</li><li>계획-관제-급전 통합운영</li></ul>
+      <div class="flow" style="margin-top:auto">
+       <div><span class="h">ADMS</span>망 상태·제약 산정</div><span>⇄</span>
+       <div><span class="h">DERMS</span>자원 최적화·출력제어</div>
+      </div>
+      <p class="note" style="margin:0">ADMS → DERMS: 운영조건 / DERMS → ADMS: 급전계획</p>
+     </div></div>
+    <div><div class="sh2">장기 <span>DSO 기능·표준확산</span></div>
+     <div class="bx">
+      <ul class="g"><li>접속·혼잡·보호·정전·공급관리</li><li>거래·정산·망요금 및 수익 재투자</li><li>법적 지위·조직·배전자산 및 표준모델 확보</li><li>산단 표준운영 모델 전국 확산</li></ul>
+      <div class="flow" style="margin-top:auto">
+       <div><span class="h">대표산단</span>실증</div><span>→</span>
+       <div><span class="h">표준</span>운영모델</div><span>→</span>
+       <div><span class="h">복수 산단</span>A · B · C</div>
+      </div>
+     </div></div>
+   </div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">15</span></footer>
+ </div>
+</section>
+
+<!-- 16. 운영주체 및 권한 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>운영주체 및 권한</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>산단공이 내부 자원 통합운영을 총괄하고, 한전·시장기관은 계통·거래 권한을 분담하는 협력형 운영체계</div>
+  <div class="bd">
+   <div class="act" style="flex:1">
+    <div class="box lead"><h4>한국산업단지공단 <span>산단 단위 자원계획·통합운영 총괄</span></h4>
+     <ul class="g"><li>발전·ESS 급전, 에너지 거래 총괄</li><li>접속·혼잡·정전관리 등 산단형 DSO 기능 수행</li></ul></div>
+    <div class="box"><h4>한전 · 구역전기사업자 <span>상위 배전망 고유 권한</span></h4>
+     <ul class="g"><li>상위 배전망의 보호·개폐·급전 등 고유 권한 수행</li><li>산단 내부망과의 접속·협조운영 및 비상상황 대응</li></ul></div>
+    <div class="box"><h4>분산자원 · 입주기업 <span>보유설비 운전·유지관리</span></h4>
+     <ul class="g"><li>태양광·ESS·유연부하 등 보유설비의 운전·유지관리</li><li>운영규칙과 급전지시에 따라 자원 운영</li></ul></div>
+    <div class="box"><h4>VPP 사업자 · 전력거래소 등 <span>시장연계·거래 지원</span></h4>
+     <ul class="g"><li>분산자원의 전력시장·계통서비스 참여 지원</li><li>거래·정산 및 운영실적 검증 등 시장연계 수행</li></ul></div>
+   </div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">16</span></footer>
+ </div>
+</section>
+
+<!-- 17. 법제도 현황 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>법·제도 현황</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>운영 기능이 여러 현행법에 분산되어 있어, 단계별 적용 법률과 기관별 권한의 체계적 연계 필요</div>
+  <div class="bd">
+   <div class="stg" style="flex:1">
+    <div><div class="sh2">1단계 <span>보급·협력</span></div>
+     <div class="bx"><dl>
+      <dt>전기사업법</dt><dd>전력산업 전반을 규율하는 기본법</dd>
+      <dt>재생에너지법</dt><dd>신재생에너지 보급·공급의무화(RPS)</dd>
+      <dt>전기안전관리법</dt><dd>전기설비 안전관리·검사 절차</dd>
+      <dt class="note">＋상법(ESG)</dt><dd class="note">역무 확장 시, ESG 경영·공시 책임</dd></dl></div></div>
+    <div><div class="sh2">2단계 <span>운영·거래</span></div>
+     <div class="bx"><dl>
+      <dt>전기사업법</dt><dd>전력산업 전반을 규율하는 기본법</dd>
+      <dt>분산에너지법</dt><dd>분산에너지 활성화 특별법: 보급·거래 특례</dd>
+      <dt>재생e·전기안전법</dt><dd>재생에너지 의무화·설비 안전기준</dd>
+      <dt class="note">＋상법(ESG)</dt><dd class="note">역무 확장 시, ESG 경영·공시 책임</dd></dl></div></div>
+    <div><div class="sh2">3단계 <span>배전망 확장</span></div>
+     <div class="bx"><dl>
+      <dt>전기사업법</dt><dd>전력산업 전반을 규율하는 기본법</dd>
+      <dt>AI·DC 특별법</dt><dd>AI·DC 등 전력다소비시설 특례</dd>
+      <dt>분산에너지법</dt><dd>분산에너지 보급·거래 특례</dd>
+      <dt class="warn">＋신규 제정</dt><dd class="warn">메가규제완화법·탄소중립산단특별법 (규제특례·산단특례)</dd></dl></div></div>
+   </div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">17</span></footer>
+ </div>
+</section>
+
+<!-- 18. 법제도 개선 방향 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>법·제도 개선 방향</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>현행법 활용 → 규제특례·시장참여 → 운영권한 법제화·특별법 제정</div>
+  <div class="bd" style="flex-direction:column;gap:.9em">
+   <table class="t">
+    <thead><tr><th style="width:13%">구분</th><th>1단계 · 소극적 모델</th><th>2단계 · 중립적 모델</th><th>3단계 · 적극적 모델</th></tr></thead>
+    <tbody>
+     <tr><td class="rh">역무 범위</td><td>보급, 협력</td><td>보급, 운영, 거래, 협력</td><td>보급, <b>배전망</b>, 운영, 거래, 협력</td></tr>
+     <tr><td class="rh">법·제도</td><td class="v">현행법 활용</td><td class="v">거래특례 확대</td><td class="v">DSO 지위 법제화</td></tr>
+     <tr><td class="rh">개선과제</td><td>수요조사 · 설비안전</td><td>자립형 운영·거래 기반 구축</td><td>자원·설비(망) 운영 및 거래</td></tr>
+     <tr><td class="rh">관련법</td><td>전기사업법 · 재생에너지법 · 전기안전관리법</td><td>전기사업법 · 분산에너지법 개정</td><td>특별법 제정 · 관련법 개정</td></tr>
+    </tbody>
+   </table>
+   <div class="arrow-band"><span>입법 부담 낮음</span><div class="ln"></div><span>입법 부담 높음 / 운영권한 최대</span></div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">18</span></footer>
+ </div>
+</section>
+
+<!-- 19. 단계별 역무·제도 개선 상세 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>단계별 주요 역무와 제도 개선 과제</h2><span class="tag">통합운영체계 제안</span></header>
+  <div class="hm"><b class="k">핵심</b>단계별로 현행법을 적용하되, 직접거래·배전망 운영은 규제특례와 신규 입법을 병행</div>
+  <div class="bd">
+   <table class="t lg" style="align-self:flex-start">
+    <thead><tr><th style="width:11%">구분</th><th>1단계 · 소극적 모델</th><th>2단계 · 중립적 모델</th><th>3단계 · 적극적 모델</th></tr></thead>
+    <tbody>
+     <tr><td class="rh">주요 역무</td>
+      <td class="l">산단·소비자 특성 조사 (PV/ESS, 금융, RE100, REGO)<br>산단별 특화 보급 방안 (산단공, 개발사업자)<br>보급 자원 관리(안전) 기반 (산단공, 운영사업자, 전기안전공사, 한전 등)</td>
+      <td class="l">산단 내 보급 분산자원 확장 (효율/DR, 자가용 PV/ESS, 개발사업자 협력)<br>자립형 운영·거래 기반 구축: 요금, RE100/REGO, 온실가스<br>참여: 산단공/운영사업자, VPP, LA, ESCO/RESCO, KPX, 한전, 전기안전공사</td>
+      <td class="l">산단 내 배전망 관련 자원 (분산자원, AIDC, 배전선로, 배전안정화설비)<br>자립형 운영(DSO)·거래 구축: 분산자원·배전망 직접 운영<br>산단 내·외 전력거래, RE100, REGO, 유연성, 배출권</td></tr>
+     <tr><td class="rh">역무 확장 ·<br>제도 개선</td>
+      <td class="l">소비자별 특성·수요 조사 (공급, 효율/DR, 안전, 요금, 거래, 금융, ESG, 정보보호)<br>PV·ESS 안전관리 기반 및 협력체계 구축 (전기안전공사, 한전 등)</td>
+      <td class="l">자원·설비 일부 운영 및 거래<br>산단 내·외부 거래 (전력 도매/직거래, REC/REGO, 배출권 등)<br>협력 소비자·기업·기관 대규모 확대</td>
+      <td class="l">산단 내부 모든 설비 운영<br>산단 내·외부 거래 (도매/소매, 직거래, REC/REGO, 유연성, 배출권)<br>전기사업자·전력시장참여자·분산에너지사업자 등록</td></tr>
+     <tr><td class="rh">근거 법령</td>
+      <td class="l">전기사업법, 재생에너지법, 전기안전관리법, 상법(ESG) 등 <span class="ok">현행 법·제도로 가능</span></td>
+      <td class="l">전기사업법(시장참여자), 분산에너지법, 재생에너지법, 전기안전관리법, 상법(ESG) 등 <span class="ok">현행 법·제도</span></td>
+      <td class="l">전기사업법(전기사업자)·분산에너지법(분산에너지사업자) 개정, 메가규제완화법·탄소중립산단특별법 <span class="warn">제정</span></td></tr>
+    </tbody>
+   </table>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">19</span></footer>
+ </div>
+</section>
+
+<!-- 20. 결론 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅳ</span><h2>시사점 및 결론</h2><span class="tag">마무리</span></header>
+  <div class="hm"><b class="k">결론</b>소극적 모델의 보급·협력 기반에서 중립적 모델의 운영·거래를 거쳐, 적극적 모델의 배전망·산단형 DSO 기능으로 단계적 확장</div>
+  <div class="bd">
+   <div class="col">
+    <ul class="g">
+     <li><b>통합운영 주체</b>: 산단공이 공공자원·입주기업 설비의 운영정보를 통합하고, 산단 단위 자원계획과 기관 간 조정을 총괄</li>
+     <li><b>단계적 이행</b>: 1단계(보급·협력) → 2단계(운영·거래) → 3단계(배전망·DSO)로 역할과 권한 확대</li>
+     <li><b>데이터·운영기반</b>: 배전망·분산자원·부하 정보를 DB화하고 ADMS-DERMS 연계, 예측·제약분석·자원조정 체계 구축</li>
+    </ul>
+   </div>
+   <div class="col">
+    <ul class="g">
+     <li><b>기관 협력</b>: 한전·구역전기사업자는 계통 권한, VPP·전력거래소는 시장연계, 입주기업은 자원운영을 담당하는 협력체계 정립</li>
+     <li><b>법·제도 기반</b>: 현행법을 단계별로 적용하되 직접거래·배전망 운영·통합정산은 규제특례와 신규 입법 병행</li>
+     <li><b>기대효과</b>: 국가 탄소중립의 선도 모델로 자리매김하고, 타 산업단지·지역으로 확산 가능한 표준화된 성공 사례 창출</li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>산단형 분산에너지 통합운영체계 필요성 및 방향성 제언 | 국회 토론회</span><span class="pg">20</span></footer>
+ </div>
+</section>
+
+</div>
+
+<div class="nav">
+ <button class="pv" id="pv" aria-label="이전 슬라이드">◀</button>
+ <span class="ct" id="ct">1 / 20</span>
+ <button class="nx" id="nx" aria-label="다음 슬라이드">▶</button>
+ <button id="pm-btn">발표 모드</button>
+</div>
+
+<script>
+(function(){
+  // ---- 산업용 판매전력량 막대차트 (EG-TIPS, TWh / 비중 %) ----
+  var Y=[2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+  var IND=[203.5,207.2,232.7,251.5,258.1,265.4,272.6,273.5,278.8,286.0,293.0,289.2,278.7,291.3,296.0,290.6,286.2];
+  var SH=[52.8,52.5,53.6,55.3,55.3,55.9,57.1,56.6,56.1,56.3,55.7,55.6,54.7,54.6,54.0,53.2,52.1];
+  var MAX=300, pk=IND.indexOf(Math.max.apply(null,IND)), plot='', yrs='';
+  Y.forEach(function(y,k){
+    plot+='<div class="c" title="'+y+'년 '+IND[k]+' TWh, '+SH[k]+'%"><span class="s">'+SH[k].toFixed(1)+'</span><i class="'+(k===pk?'pk':'')+'" style="height:'+(IND[k]/MAX*100).toFixed(1)+'%"></i></div>';
+    yrs+='<span>'+(k%2===0?"'"+String(y).slice(2):'')+'</span>';
+  });
+  document.getElementById('cc-plot').innerHTML=plot;
+  document.getElementById('cc-yrs').innerHTML=yrs;
+
+  // ---- 발표 모드 ----
+  var slides=[].slice.call(document.querySelectorAll('.slide')), cur=0, body=document.body;
+  var ct=document.getElementById('ct'), btn=document.getElementById('pm-btn');
+  function show(n){cur=Math.max(0,Math.min(slides.length-1,n));slides.forEach(function(el,k){el.classList.toggle('cur',k===cur);});ct.textContent=(cur+1)+' / '+slides.length;}
+  function nearest(){var best=0,bd=1e9;slides.forEach(function(el,k){var d=Math.abs(el.getBoundingClientRect().top);if(d<bd){bd=d;best=k;}});return best;}
+  function enter(){show(nearest());body.classList.add('present');btn.textContent='목록 보기';
+    try{var p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+  function exit(){body.classList.remove('present');btn.textContent='발표 모드';
+    try{if(document.fullscreenElement&&document.exitFullscreen){var p=document.exitFullscreen();if(p&&p.catch)p.catch(function(){});}}catch(e){}
+    slides[cur].scrollIntoView({block:'start'});}
+  btn.addEventListener('click',function(){body.classList.contains('present')?exit():enter();});
+  document.getElementById('pv').addEventListener('click',function(){show(cur-1);});
+  document.getElementById('nx').addEventListener('click',function(){show(cur+1);});
+  document.addEventListener('keydown',function(e){
+    if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+    if(!body.classList.contains('present')){if(e.key==='f'||e.key==='F')enter();return;}
+    if(['ArrowRight','PageDown',' '].indexOf(e.key)>=0){e.preventDefault();show(cur+1);}
+    else if(['ArrowLeft','PageUp'].indexOf(e.key)>=0){e.preventDefault();show(cur-1);}
+    else if(e.key==='Escape'){exit();}
+    else if(e.key==='Home'){show(0);}else if(e.key==='End'){show(slides.length-1);}
+  });
+  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&body.classList.contains('present'))exit();});
+})();
+</script>
