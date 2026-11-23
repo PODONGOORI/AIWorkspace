@@ -1,0 +1,750 @@
+<title>SDP 입문 세미나</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: 16:9 보고서형 슬라이드(남색 헤더바 + 헤드메시지 박스 + 개조식 본문 + 하단 쪽번호). 인쇄물 느낌의 단일 라이트 테마를 의도적으로 사용. */
+:root{
+  --navy:#14306b;      /* 헤더·표 머리 */
+  --blue:#2a62c4;      /* 강조 텍스트·선 */
+  --teal:#0f9b7a;      /* 보조 강조(정답·최적) */
+  --sky:#eaf1fb;       /* 헤드메시지 바탕 */
+  --mint:#e3f5ef;      /* 최적 셀 바탕 */
+  --amber:#c2580a;     /* 주의·반례 */
+  --ink:#1b2230;       /* 본문 */
+  --mute:#5b6577;      /* 캡션 */
+  --line:#cfd7e4;      /* 표 선 */
+  --paper:#ffffff;
+  --desk:#dfe4ec;      /* 슬라이드 바깥 */
+  --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--desk);color:var(--ink);font-family:var(--sans);margin:0}
+.deck{display:flex;flex-direction:column;align-items:center;gap:28px;
+  padding-block:24px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.slide{width:100%;max-width:1200px;aspect-ratio:16/9;background:var(--paper);position:relative;
+  container-type:inline-size;box-shadow:0 2px 14px rgba(20,48,107,.14);overflow:hidden}
+.in{position:absolute;inset:0;display:flex;flex-direction:column;font-size:1.48cqw;line-height:1.5;padding:2.6em 3em 2.2em}
+/* header */
+.sh{display:flex;align-items:flex-end;gap:.7em;padding-bottom:.45em;border-bottom:.22em solid var(--navy);position:relative}
+.sh::after{content:"";position:absolute;left:0;right:0;bottom:-.5em;height:.08em;background:var(--teal)}
+.sec{background:var(--navy);color:#fff;font-weight:700;font-size:1.05em;min-width:2.1em;height:1.75em;display:grid;place-items:center;padding:0 .4em}
+.sh h2{margin:0;font-size:1.75em;font-weight:900;letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
+.sh .tag{margin-left:auto;color:var(--mute);font-size:.85em;font-weight:500}
+.hm{margin-top:1.15em;background:var(--sky);border:.08em solid #b9cdee;border-radius:.35em;padding:.55em 1em;font-weight:700;font-size:1.06em;display:flex;gap:.8em;align-items:center}
+.hm b.k{background:var(--blue);color:#fff;font-size:.78em;padding:.15em .55em;border-radius:.2em;white-space:nowrap}
+.bd{flex:1;min-height:0;margin-top:1em;display:flex;gap:1.6em}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;gap:.7em}
+.sf{position:absolute;left:3em;right:3em;bottom:.9em;display:flex;justify-content:space-between;font-size:.72em;color:var(--mute);border-top:.06em solid var(--line);padding-top:.35em}
+.sf .pg{font-family:var(--mono);font-weight:600;color:var(--navy)}
+/* 개조식 */
+ul.g{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.35em}
+ul.g>li{padding-left:1.25em;position:relative}
+ul.g>li::before{content:"□";position:absolute;left:0;color:var(--navy);font-weight:700}
+ul.g>li>b:first-child{color:var(--navy)}
+ul.g ul{list-style:none;margin:.2em 0 0;padding:0;display:flex;flex-direction:column;gap:.15em}
+ul.g ul>li{padding-left:1.2em;position:relative;font-size:.94em}
+ul.g ul>li::before{content:"○";position:absolute;left:0;color:var(--blue)}
+ul.g ul ul>li::before{content:"-";color:var(--mute)}
+.note{font-size:.78em;color:var(--mute)}
+.em{color:var(--blue);font-weight:700}
+.ok{color:var(--teal);font-weight:700}
+.warn{color:var(--amber);font-weight:700}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* tables */
+table.t{border-collapse:collapse;width:100%;font-size:.86em;font-variant-numeric:tabular-nums}
+.t th{background:var(--navy);color:#fff;font-weight:500;padding:.32em .5em;border:.06em solid var(--navy)}
+.t td{border:.06em solid var(--line);padding:.28em .5em;text-align:center}
+.t tbody tr:nth-child(even) td{background:#f6f8fc}
+.t td.l{text-align:left}
+.t td.best{background:var(--mint)!important;color:#0b6e56;font-weight:700}
+.t td.na{color:#b3bac6}
+.t td.v{font-weight:700;color:var(--navy)}
+table.calc{font-size:.8em}
+.calc td,.calc th{white-space:nowrap;padding:.3em .38em}
+.t tr.sep td{border-top:.14em solid var(--navy)}
+/* boxes */
+.box{border:.08em solid var(--line);border-radius:.35em;padding:.6em .85em;background:#fbfcfe}
+.box h4{margin:0 0 .35em;font-size:.95em;color:var(--navy)}
+.eq{font-family:"Times New Roman",Georgia,serif;font-size:1.25em;text-align:center;padding:.5em .4em;background:#f7f9fd;border:.06em solid var(--line);border-radius:.3em}
+.eq i{font-style:italic}
+.eq .u{border-bottom:.12em solid var(--blue);padding-bottom:.05em}
+.eq .u2{border-bottom:.12em solid var(--teal);padding-bottom:.05em}
+.flow{display:flex;align-items:stretch;gap:.4em;font-size:.86em}
+.flow>div{flex:1;border:.08em solid var(--blue);border-radius:.3em;padding:.4em .3em;text-align:center;background:#fff}
+.flow>span{align-self:center;color:var(--blue);font-weight:700}
+.flow .h{font-weight:700;color:var(--navy);display:block}
+/* cover */
+.cover .in{padding:0;justify-content:stretch}
+.cv-top{background:var(--navy);color:#fff;padding:4.2em 4em 2.6em;position:relative}
+.cv-top::after{content:"";position:absolute;left:0;right:0;bottom:-.35em;height:.35em;background:var(--teal)}
+.cv-top .ey{font-size:.95em;letter-spacing:.12em;opacity:.8}
+.cv-top h1{margin:.4em 0 .25em;font-size:3em;font-weight:900;line-height:1.15;letter-spacing:-.02em}
+.cv-top p{margin:0;font-size:1.3em;opacity:.92}
+.cv-bot{flex:1;padding:2.2em 4em;display:flex;justify-content:space-between;align-items:flex-end}
+.cv-bot .kw{display:flex;gap:.5em;flex-wrap:wrap}
+.cv-bot .kw span{border:.08em solid var(--navy);color:var(--navy);padding:.2em .7em;font-size:.9em;font-weight:500}
+.cv-bot .who{text-align:right;color:var(--mute);font-size:1em}
+/* toc */
+.toc{display:grid;grid-template-columns:1fr 1fr;gap:1em 2em;margin-top:1.6em}
+.toc div{display:flex;gap:.9em;align-items:flex-start;border-bottom:.06em solid var(--line);padding-bottom:.8em}
+.toc .n{font-size:2.1em;font-weight:900;color:var(--navy);line-height:1;min-width:1.4em}
+.toc h3{margin:.1em 0 .2em;font-size:1.2em}
+.toc p{margin:0;color:var(--mute);font-size:.9em}
+/* stage lattice */
+.lat{display:flex;gap:.6em;align-items:center}
+.lat .st{flex:1;display:flex;flex-direction:column;gap:.35em;text-align:center}
+.lat .st .hd{font-weight:700;color:var(--navy);font-size:.9em}
+.nd{border:.08em solid var(--navy);border-radius:.3em;padding:.3em;font-size:.85em}
+.nd.H{background:#fdf0e6;border-color:var(--amber)}
+.nd.L{background:var(--sky)}
+.nd b{font-family:var(--mono)}
+.lat .ar{color:var(--mute);font-size:1.3em}
+/* bars */
+.bars{display:flex;flex-direction:column;gap:.75em}
+.bar{display:grid;grid-template-columns:9.5em 1fr;align-items:center;gap:.7em;font-size:.92em}
+.bar .tr{background:#eef1f6;height:1.7em;position:relative}
+.bar .fl{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:.5em;color:#fff;font-family:var(--mono);font-weight:600}
+/* policy map */
+.pm{display:grid;grid-template-columns:4.4em repeat(3,1fr);gap:.25em;font-size:.84em;text-align:center}
+.pm .h{font-weight:700;color:var(--navy);padding:.2em}
+.pm .c{display:grid;grid-template-columns:1fr 1fr;gap:.2em}
+.pm .c span{padding:.25em .1em;border-radius:.2em;font-weight:700}
+.a-c{background:#dbe7fb;color:#1d4fa8}.a-w{background:#eceff4;color:#5b6577}.a-d{background:#fde6d6;color:#a5490a}
+/* simulator */
+.sim .ctrl{display:flex;gap:.5em;flex-wrap:wrap;align-items:center;font-size:.86em}
+.sim .ctrl .grp{display:flex;align-items:center;gap:.25em}
+.sim button{font:inherit;font-size:.92em;border:.08em solid var(--navy);background:#fff;color:var(--navy);padding:.15em .55em;cursor:pointer;border-radius:.2em}
+.sim button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.sim button:focus-visible,.nav button:focus-visible{outline:.15em solid var(--teal);outline-offset:.1em}
+.res{display:flex;gap:.6em;font-size:.86em}
+.res div{flex:1;border:.08em solid var(--line);padding:.3em .5em;text-align:center}
+.res b{display:block;font-family:var(--mono);font-size:1.25em;color:var(--navy)}
+/* quiz */
+details{border:.08em solid var(--line);border-radius:.3em;padding:.35em .7em;background:#fbfcfe;font-size:.9em}
+details summary{cursor:pointer;font-weight:700;color:var(--navy)}
+details p{margin:.35em 0 0}
+/* nav */
+.nav{position:fixed;right:max(16px,calc(env(safe-area-inset-right,0px) + 16px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:6px;z-index:5}
+.nav button{font:500 13px var(--sans);background:var(--navy);color:#fff;border:0;padding:8px 12px;border-radius:4px;cursor:pointer}
+.nav .ct{background:#fff;color:var(--navy);font:600 13px var(--mono);padding:8px 10px;border-radius:4px;display:grid;place-items:center}
+body.present{overflow:hidden;background:#0d1a38}
+body.present .deck{padding:0;gap:0;height:100vh;height:100dvh;justify-content:center}
+body.present .slide{display:none;width:min(100vw,177.78vh);width:min(100vw,177.78dvh);max-width:none;box-shadow:none}
+body.present .slide.cur{display:block}
+.nav .pv,.nav .nx,.nav .ct{display:none}
+body.present .nav .pv,body.present .nav .nx,body.present .nav .ct{display:grid}
+@media (max-width:700px){.nav{gap:4px}.nav button{padding:7px 9px;font-size:12px}}
+</style>
+
+<div class="deck" id="deck">
+
+<!-- 1. 표지 -->
+<section class="slide cover">
+ <div class="in">
+  <div class="cv-top">
+   <div class="ey">학부 세미나 · 에너지 시스템 최적화</div>
+   <h1>확률적 동적계획법(SDP) 입문</h1>
+   <p>BESS 3시간 차익거래 예제로 Bellman 방정식을 손으로 풀어보기</p>
+  </div>
+  <div class="cv-bot">
+   <div class="kw"><span>Stochastic DP</span><span>Bellman 방정식</span><span>후방귀납법</span><span>BESS 차익거래</span></div>
+   <div class="who">2026. 11.<br>세미나 자료</div>
+  </div>
+ </div>
+</section>
+
+<!-- 2. 목차 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">목차</span><h2>오늘 다룰 내용</h2><span class="tag">총 15쪽 · 약 50분</span></header>
+  <div class="toc">
+   <div><span class="n">Ⅰ</span><div><h3>왜 SDP인가</h3><p>BESS 차익거래가 '순차적 확률 의사결정'인 이유</p></div></div>
+   <div><span class="n">Ⅱ</span><div><h3>SDP의 구성과 Bellman 방정식</h3><p>5가지 구성요소, 정보 시점, 후방귀납법, 차원의 저주</p></div></div>
+   <div><span class="n">Ⅲ</span><div><h3>BESS 3시간 예제 (Step 0~4)</h3><p>정식화 → t=3 → t=2 → t=1 → 최적 정책 읽기</p></div></div>
+   <div><span class="n">Ⅳ</span><div><h3>결과 해석과 확장</h3><p>평균가격 계획·완전예측과 비교, 실전 확장, 토론 문제</p></div></div>
+  </div>
+  <div class="hm" style="margin-top:1.6em"><b class="k">목표</b>세미나가 끝나면 3×2 상태표를 직접 채워 최적 충·방전 정책을 구할 수 있다</div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">2</span></footer>
+ </div>
+</section>
+
+<!-- 3. 문제 제기 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅰ</span><h2>BESS 차익거래는 왜 어려운가</h2><span class="tag">왜 SDP인가</span></header>
+  <div class="hm"><b class="k">핵심</b>지금의 충·방전이 다음 시간의 선택지를 바꾸고, 다음 시간의 가격은 아직 모른다</div>
+  <div class="bd">
+   <div class="col">
+    <ul class="g">
+     <li><b>차익거래 원리</b>: 쌀 때 충전, 비쌀 때 방전
+      <ul><li>수익 = 방전가격 − 충전가격 − 열화비용</li></ul></li>
+     <li><b>어려움 ① 불확실성</b>: 다음 시간 SMP를 미리 알 수 없음</li>
+     <li><b>어려움 ② 시간 연결</b>: 지금 방전하면 저장량(SoC)이 줄어 나중에 팔 것이 없음
+      <ul><li>"지금 120원에 팔까, 3시간 뒤 180원을 기다릴까?"</li></ul></li>
+     <li><b>어려움 ③ 물리 제약</b>: 용량(MWh)·출력(MW) 한계
+      <ul><li>출력 제약은 예제에서 결과를 바꾸는 핵심 요인으로 다시 등장</li></ul></li>
+    </ul>
+   </div>
+   <div class="col">
+    <table class="t">
+     <thead><tr><th>접근법</th><th>불확실성</th><th>시간 연결</th><th>한계</th></tr></thead>
+     <tbody>
+      <tr><td class="l">규칙 기반<br><span class="note">가격 &lt; 임계값이면 충전</span></td><td>✕</td><td>✕</td><td class="l">임계값 근거 없음</td></tr>
+      <tr><td class="l">결정론적 최적화<br><span class="note">예측가격 1개로 LP</span></td><td>✕</td><td>○</td><td class="l">예측이 틀리면 대응 불가</td></tr>
+      <tr><td class="l"><b>확률적 동적계획(SDP)</b></td><td class="ok">○</td><td class="ok">○</td><td class="l">상태가 많으면 계산 폭증</td></tr>
+     </tbody>
+    </table>
+    <div class="box"><h4>SDP가 내놓는 것</h4>고정된 계획표가 아니라 <span class="em">정책(policy)</span>: "<i>t</i>시에 SoC가 <i>s</i>이고 가격이 <i>p</i>로 확인되면 → 행동 <i>a</i>" 라는 조건부 규칙</div>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">3</span></footer>
+ </div>
+</section>
+
+<!-- 4. 5요소 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅱ</span><h2>SDP의 5가지 구성요소</h2><span class="tag">SDP의 구성</span></header>
+  <div class="hm"><b class="k">핵심</b>문제를 이 다섯 칸에 채울 수 있으면 SDP로 풀 수 있다</div>
+  <div class="bd" style="flex-direction:column;gap:.8em">
+   <table class="t">
+    <thead><tr><th style="width:16%">구성요소</th><th style="width:12%">기호</th><th style="width:36%">일반 정의</th><th>BESS 예제에서는</th></tr></thead>
+    <tbody>
+     <tr><td><b>단계 (stage)</b></td><td><i>t</i> = 1,…,<i>T</i></td><td class="l">결정을 내리는 시점</td><td class="l">1시간 단위, <i>T</i> = 3</td></tr>
+     <tr><td><b>상태 (state)</b></td><td><i>s<sub>t</sub></i></td><td class="l">미래 결정에 필요한 정보를 모두 담은 변수</td><td class="l">SoC ∈ {0, 1, 2} MWh <b>+</b> 이번 시간 가격 <i>p<sub>t</sub></i></td></tr>
+     <tr><td><b>결정 (action)</b></td><td><i>a<sub>t</sub></i> ∈ <i>A</i>(<i>s<sub>t</sub></i>)</td><td class="l">상태에 따라 허용되는 선택</td><td class="l">충전 +1 / 대기 0 / 방전 −1 MWh</td></tr>
+     <tr><td><b>불확실성·전이</b></td><td><i>ξ<sub>t</sub></i>, <i>f</i>(·)</td><td class="l">다음 상태 = <i>f</i>(현재 상태, 결정, 확률변수)</td><td class="l">SoC<sub><i>t</i>+1</sub> = SoC<sub><i>t</i></sub> + <i>a<sub>t</sub></i>, 다음 가격은 확률분포를 따름</td></tr>
+     <tr><td><b>보상 (reward)</b></td><td><i>r<sub>t</sub></i>(<i>s<sub>t</sub></i>, <i>a<sub>t</sub></i>)</td><td class="l">이번 단계에서 얻는 이익</td><td class="l">충전 −<i>p</i>, 대기 0, 방전 <i>p</i> − 10 (천원)</td></tr>
+    </tbody>
+   </table>
+   <ul class="g">
+    <li><b>마르코프 성질</b>: 현재 상태만 알면 과거 경로는 미래 결정에 필요 없음
+     <ul><li>가격이 전 시간 가격에 의존하면 <span class="warn">전 시간 가격도 상태에 넣어야</span> 함 → 상태 수 증가</li></ul></li>
+   </ul>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">4</span></footer>
+ </div>
+</section>
+
+<!-- 5. Bellman -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅱ</span><h2>Bellman 방정식과 정보 시점</h2><span class="tag">SDP의 구성</span></header>
+  <div class="hm"><b class="k">핵심</b>오늘의 가치 = 이번 시간 보상 + 다음 시간 가치의 <u>기대값</u> 중 최대</div>
+  <div class="bd" style="flex-direction:column;gap:.85em">
+   <div class="eq"><i>V<sub>t</sub></i>(<i>s</i>, <i>p</i>) = max<sub><i>a</i> ∈ <i>A</i>(<i>s</i>)</sub> { <span class="u"><i>r</i>(<i>a</i>, <i>p</i>)</span> + <span class="u2">𝔼<sub><i>p′</i></sub>[ <i>V</i><sub><i>t</i>+1</sub>(<i>s</i> + <i>a</i>, <i>p′</i>) ]</span> } ,&nbsp;&nbsp; <i>V</i><sub><i>T</i>+1</sub>(·) = 종료가치</div>
+   <div class="bd" style="margin-top:0;gap:1.4em">
+    <div class="col">
+     <ul class="g">
+      <li><b><span style="border-bottom:.12em solid var(--blue)">즉시 보상</span></b>: 지금 행동으로 바로 확정되는 돈</li>
+      <li><b><span style="border-bottom:.12em solid var(--teal)">미래 가치의 기대값</span></b>: 남은 에너지가 앞으로 벌어줄 돈의 평균
+       <ul><li>이 항이 "지금 팔지 말고 기다릴 이유"를 숫자로 만든다</li></ul></li>
+      <li><b>최적성 원리</b> (Bellman, 1957): 최적 경로의 남은 부분도 그 자체로 최적
+       <ul><li>그래서 뒤에서부터 한 단계씩 풀 수 있다</li></ul></li>
+      <li><b>정책</b>: <i>π<sub>t</sub></i>(<i>s</i>, <i>p</i>) = 위 식의 argmax</li>
+     </ul>
+    </div>
+    <div class="col">
+     <div class="box"><h4>정보 시점 (한 시간 안의 순서)</h4>
+      <div class="flow">
+       <div><span class="h">① 관측</span>가격 <i>p<sub>t</sub></i> 확인</div><span>→</span>
+       <div><span class="h">② 결정</span><i>a<sub>t</sub></i> 선택</div><span>→</span>
+       <div><span class="h">③ 정산</span><i>r</i>(<i>a<sub>t</sub></i>, <i>p<sub>t</sub></i>)</div><span>→</span>
+       <div><span class="h">④ 전이</span>SoC 갱신</div>
+      </div>
+      <p class="note" style="margin:.5em 0 0">가격을 <b>본 뒤에</b> 결정한다고 가정 (hazard-decision). 결정 후 가격이 공개되는 시장(전일 입찰 등)이면 max와 𝔼의 순서가 바뀌고 가치가 더 낮아진다.</p>
+     </div>
+     <div class="box"><h4>예제 가정: 시간별 가격은 서로 독립</h4>미래 가치를 SoC만의 함수로 줄일 수 있다<br><span class="num">V̄<sub>t+1</sub>(s′) = Σ<sub>p′</sub> Pr(p′)·V<sub>t+1</sub>(s′, p′)</span></div>
+    </div>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">5</span></footer>
+ </div>
+</section>
+
+<!-- 6. 후방귀납 & 차원의 저주 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅱ</span><h2>풀이법: 후방귀납법과 차원의 저주</h2><span class="tag">SDP의 구성</span></header>
+  <div class="hm"><b class="k">핵심</b>마지막 시간부터 거꾸로 표를 채운다. 표의 칸 수가 곧 계산량이다</div>
+  <div class="bd">
+   <div class="col">
+    <div class="box"><h4>후방귀납법 (Backward Induction)</h4>
+     <ul class="g">
+      <li><b>0단계</b>: 종료가치 <i>V</i><sub>4</sub>(<i>s</i>) 정하기</li>
+      <li><b><i>t</i> = <i>T</i>, …, 1 반복</b>
+       <ul><li>모든 (SoC, 가격) 칸에서 가능한 행동별 값 계산
+        <ul><li>값 = 즉시보상 + <i>V̄</i><sub><i>t</i>+1</sub>(다음 SoC)</li></ul></li>
+       <li>가장 큰 값 → <i>V<sub>t</sub></i>, 그 행동 → 정책</li>
+       <li>가격 확률로 평균 → <i>V̄<sub>t</sub></i>(SoC)</li></ul></li>
+      <li><b>마지막</b>: 초기 SoC에서 <i>V̄</i><sub>1</sub>(<i>s</i><sub>0</sub>) = 최적 기대수익</li>
+     </ul>
+    </div>
+    <p class="note" style="margin:0">전방(t=1→3)으로는 못 푼다: t=1에서 결정하려면 t=2의 가치를 이미 알아야 하기 때문</p>
+   </div>
+   <div class="col">
+    <table class="t">
+     <thead><tr><th>문제 규모</th><th>SoC</th><th>가격</th><th>행동</th><th>단계</th><th>계산 칸 수</th></tr></thead>
+     <tbody>
+      <tr><td class="l"><b>오늘 예제</b></td><td>3</td><td>2</td><td>3</td><td>3</td><td class="v">54</td></tr>
+      <tr><td class="l">하루·15분·배터리 1기</td><td>101</td><td>20</td><td>41</td><td>96</td><td class="v">약 795만</td></tr>
+      <tr><td class="l">같은 조건·배터리 3기</td><td>101³</td><td>20</td><td>41³</td><td>96</td><td class="warn">약 1.4×10¹³</td></tr>
+     </tbody>
+    </table>
+    <ul class="g">
+     <li><b>차원의 저주</b> (curse of dimensionality)
+      <ul><li>상태변수 1개 추가 → 계산량이 '구간 수'배로 곱해짐</li>
+       <li>배터리 1기는 PC로 수 초, 3기 이상은 근사가 필요</li></ul></li>
+     <li><b>대응</b>: SDDP(볼록 문제), 근사 DP·강화학습 (Ⅳ장에서 다시)</li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">6</span></footer>
+ </div>
+</section>
+
+<!-- 7. 예제 설정 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅲ</span><h2>예제 설정: 2 MWh 배터리, 3시간</h2><span class="tag">BESS 3시간 예제</span></header>
+  <div class="hm"><b class="k">설정</b>시작 SoC 1 MWh. 매시간 가격은 '낮음/높음' 두 가지 중 하나가 확률적으로 나온다</div>
+  <div class="bd">
+   <div class="col" style="flex:.85">
+    <table class="t">
+     <thead><tr><th>항목</th><th>값</th></tr></thead>
+     <tbody>
+      <tr><td class="l">용량 / 출력</td><td>2 MWh / 1 MW</td></tr>
+      <tr><td class="l">SoC 상태</td><td>{0, 1, 2} MWh</td></tr>
+      <tr><td class="l">시작 SoC</td><td>1 MWh</td></tr>
+      <tr><td class="l">행동 (1시간)</td><td>충전 +1 · 대기 0 · 방전 −1</td></tr>
+      <tr><td class="l">효율</td><td>100% (단순화)</td></tr>
+      <tr><td class="l">열화비용</td><td>방전 시 10원/kWh</td></tr>
+      <tr><td class="l">종료가치 <i>V</i><sub>4</sub></td><td>0 (남은 전력은 가치 없음)</td></tr>
+     </tbody>
+    </table>
+    <p class="note" style="margin:0">단위: 가격(원/kWh) × 1 MWh = <b>천원</b>. 예) 180원/kWh에 1 MWh 방전 = 180천원</p>
+   </div>
+   <div class="col">
+    <div class="box"><h4>시간별 가격 분포 (서로 독립)</h4>
+     <div class="lat">
+      <div class="st"><span class="hd">t = 1</span><div class="nd H">높음 <b>120</b>원 · 0.5</div><div class="nd L">낮음 <b>80</b>원 · 0.5</div><span class="note">평균 100</span></div>
+      <span class="ar">→</span>
+      <div class="st"><span class="hd">t = 2</span><div class="nd H">높음 <b>140</b>원 · 0.4</div><div class="nd L">낮음 <b>60</b>원 · 0.6</div><span class="note">평균 92</span></div>
+      <span class="ar">→</span>
+      <div class="st"><span class="hd">t = 3</span><div class="nd H">높음 <b>180</b>원 · 0.6</div><div class="nd L">낮음 <b>90</b>원 · 0.4</div><span class="note">평균 144</span></div>
+     </div>
+    </div>
+    <ul class="g">
+     <li><b>시나리오</b>: 2 × 2 × 2 = 8개 가격 경로</li>
+     <li><b>직관 테스트</b>: 평균만 보면 t=2가 가장 싸고 t=3이 가장 비싸다
+      <ul><li>그럼 "t=1 대기 → t=2 충전 → t=3 방전"일까? <span class="warn">출력 1 MW 제약을 잊지 말 것</span></li></ul></li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">7</span></footer>
+ </div>
+</section>
+
+<!-- 8. Step 0 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Step 0</span><h2>정식화: 보상·전이·가능 행동</h2><span class="tag">BESS 3시간 예제</span></header>
+  <div class="hm"><b class="k">핵심</b>상태 (SoC, 가격) 6칸 × 3시간 = 18칸을 채우면 끝난다</div>
+  <div class="bd">
+   <div class="col">
+    <table class="t">
+     <thead><tr><th>행동 <i>a</i></th><th>즉시보상 <i>r</i>(<i>a</i>, <i>p</i>)</th><th>다음 SoC</th></tr></thead>
+     <tbody>
+      <tr><td>충전 (+1)</td><td>−<i>p</i></td><td><i>s</i> + 1</td></tr>
+      <tr><td>대기 (0)</td><td>0</td><td><i>s</i></td></tr>
+      <tr><td>방전 (−1)</td><td><i>p</i> − 10</td><td><i>s</i> − 1</td></tr>
+     </tbody>
+    </table>
+    <table class="t">
+     <thead><tr><th>SoC <i>s</i></th><th>가능 행동 <i>A</i>(<i>s</i>)</th><th>이유</th></tr></thead>
+     <tbody>
+      <tr><td>0</td><td>충전, 대기</td><td class="l">빈 배터리는 방전 불가</td></tr>
+      <tr><td>1</td><td>충전, 대기, 방전</td><td class="l">제약 없음</td></tr>
+      <tr><td>2</td><td>대기, 방전</td><td class="l">가득 찬 배터리는 충전 불가</td></tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="col">
+    <div class="eq" style="font-size:1.12em"><i>V<sub>t</sub></i>(<i>s</i>, <i>p</i>) = max<sub><i>a</i>∈<i>A</i>(<i>s</i>)</sub> { <i>r</i>(<i>a</i>, <i>p</i>) + <i>V̄</i><sub><i>t</i>+1</sub>(<i>s</i>+<i>a</i>) }</div>
+    <div class="eq" style="font-size:1.12em"><i>V̄<sub>t</sub></i>(<i>s</i>) = Pr(L)·<i>V<sub>t</sub></i>(<i>s</i>, <i>p</i><sub>L</sub>) + Pr(H)·<i>V<sub>t</sub></i>(<i>s</i>, <i>p</i><sub>H</sub>)</div>
+    <ul class="g">
+     <li><b>V<sub>t</sub>(s, p)</b>: 가격을 <u>확인한 뒤</u>의 가치 → 행동 선택에 사용</li>
+     <li><b>V̄<sub>t</sub>(s)</b>: 가격을 <u>보기 전</u>의 기대가치 → 한 시간 앞에서 사용</li>
+     <li><b>종료조건</b>: <i>V̄</i><sub>4</sub>(0) = <i>V̄</i><sub>4</sub>(1) = <i>V̄</i><sub>4</sub>(2) = 0
+      <ul><li>이 가정 때문에 t=3에는 팔 수 있으면 무조건 판다</li>
+       <li>현실에서는 다음 날 쓸 에너지 가치를 넣는다 (토론 문제 ②)</li></ul></li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">8</span></footer>
+ </div>
+</section>
+
+<!-- 9. Step 1 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Step 1</span><h2>t = 3 (마지막 시간) 계산</h2><span class="tag">BESS 3시간 예제</span></header>
+  <div class="hm"><b class="k">결과</b><span><i>V̄</i><sub>3</sub> = (0, <b>134</b>, <b>134</b>) — SoC 2의 가치가 SoC 1과 같다</span></div>
+  <div class="bd">
+   <div class="col" style="flex:1.25">
+    <table class="t calc">
+     <thead><tr><th>SoC</th><th>가격 (확률)</th><th>충전</th><th>대기</th><th>방전</th><th><i>V</i><sub>3</sub></th><th>최적</th></tr></thead>
+     <tbody>
+      <tr><td rowspan="2">0</td><td>90 (0.4)</td><td>−90 + 0 = −90</td><td class="best">0</td><td class="na">—</td><td class="v">0</td><td>대기</td></tr>
+      <tr><td>180 (0.6)</td><td>−180</td><td class="best">0</td><td class="na">—</td><td class="v">0</td><td>대기</td></tr>
+      <tr class="sep"><td rowspan="2">1</td><td>90 (0.4)</td><td>−90</td><td>0</td><td class="best">90−10 = 80</td><td class="v">80</td><td>방전</td></tr>
+      <tr><td>180 (0.6)</td><td>−180</td><td>0</td><td class="best">170</td><td class="v">170</td><td>방전</td></tr>
+      <tr class="sep"><td rowspan="2">2</td><td>90 (0.4)</td><td class="na">—</td><td>0</td><td class="best">80</td><td class="v">80</td><td>방전</td></tr>
+      <tr><td>180 (0.6)</td><td class="na">—</td><td>0</td><td class="best">170</td><td class="v">170</td><td>방전</td></tr>
+     </tbody>
+    </table>
+    <p class="note" style="margin:0">각 칸 = 즉시보상 + <i>V̄</i><sub>4</sub>(다음 SoC). <i>V̄</i><sub>4</sub> = 0이므로 즉시보상만 비교</p>
+   </div>
+   <div class="col">
+    <div class="box"><h4>기대가치 계산</h4>
+     <p class="num" style="margin:.2em 0">V̄₃(0) = 0.4×0 + 0.6×0 = <b>0</b></p>
+     <p class="num" style="margin:.2em 0">V̄₃(1) = 0.4×80 + 0.6×170 = <b>134</b></p>
+     <p class="num" style="margin:.2em 0">V̄₃(2) = 0.4×80 + 0.6×170 = <b>134</b></p>
+    </div>
+    <ul class="g">
+     <li><b>관찰</b>: 2 MWh를 들고 t=3에 도착해도 <span class="warn">1 MWh밖에 못 판다</span>
+      <ul><li>출력 1 MW × 1시간 = 1 MWh</li>
+       <li>두 번째 MWh의 한계가치 = 134 − 134 = <b>0</b></li></ul></li>
+     <li><b>예고</b>: 이 0이 t=2의 "싸도 충전 안 함"을 만든다</li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">9</span></footer>
+ </div>
+</section>
+
+<!-- 10. Step 2 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Step 2</span><h2>t = 2 계산 (V̄₃ 사용)</h2><span class="tag">BESS 3시간 예제</span></header>
+  <div class="hm"><b class="k">결과</b><span><i>V̄</i><sub>2</sub> = (44.4, 134, 216) — 60원에도 SoC 1이면 충전하지 않는다</span></div>
+  <div class="bd">
+   <div class="col" style="flex:1.3">
+    <table class="t calc">
+     <thead><tr><th>SoC</th><th>가격 (확률)</th><th>충전</th><th>대기</th><th>방전</th><th><i>V</i><sub>2</sub></th><th>최적</th></tr></thead>
+     <tbody>
+      <tr><td rowspan="2">0</td><td>60 (0.6)</td><td class="best">−60+134 = 74</td><td>0+0 = 0</td><td class="na">—</td><td class="v">74</td><td>충전</td></tr>
+      <tr><td>140 (0.4)</td><td>−140+134 = −6</td><td class="best">0</td><td class="na">—</td><td class="v">0</td><td>대기</td></tr>
+      <tr class="sep"><td rowspan="2">1</td><td>60 (0.6)</td><td>−60+134 = 74</td><td class="best">0+134 = 134</td><td>50+0 = 50</td><td class="v">134</td><td>대기</td></tr>
+      <tr><td>140 (0.4)</td><td>−6</td><td class="best">134</td><td>130+0 = 130</td><td class="v">134</td><td>대기</td></tr>
+      <tr class="sep"><td rowspan="2">2</td><td>60 (0.6)</td><td class="na">—</td><td>0+134 = 134</td><td class="best">50+134 = 184</td><td class="v">184</td><td>방전</td></tr>
+      <tr><td>140 (0.4)</td><td class="na">—</td><td>134</td><td class="best">130+134 = 264</td><td class="v">264</td><td>방전</td></tr>
+     </tbody>
+    </table>
+    <p class="note num" style="margin:0">V̄₂(0) = 0.6×74 + 0.4×0 = 44.4 · V̄₂(1) = 134 · V̄₂(2) = 0.6×184 + 0.4×264 = 216</p>
+   </div>
+   <div class="col">
+    <ul class="g">
+     <li><b>SoC 1, 가격 60</b>: 충전 74 &lt; 대기 134
+      <ul><li>2 MWh로 채워도 t=3에 1 MWh만 팔 수 있어 60원 지출만 남음</li>
+       <li>평균가격 직관("t=2에 충전")이 <span class="warn">틀리는 지점</span></li></ul></li>
+     <li><b>SoC 1, 가격 140</b>: 방전 130 &lt; 대기 134
+      <ul><li>지금 140원보다 t=3의 기대가치가 4천원 더 큼</li>
+       <li>차이가 작다 → 열화비용·확률이 조금만 바뀌어도 뒤집힘</li></ul></li>
+     <li><b>SoC 2</b>: 가격과 무관하게 지금 1 MWh 방전
+      <ul><li>남는 1 MWh는 t=3에 팔면 되므로 지금 파는 것이 공짜 이익</li></ul></li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">10</span></footer>
+ </div>
+</section>
+
+<!-- 11. Step 3 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Step 3</span><h2>t = 1 계산과 최적 기대수익</h2><span class="tag">BESS 3시간 예제</span></header>
+  <div class="hm"><b class="k">결과</b><span>시작 SoC 1의 최적 기대수익 <i>V̄</i><sub>1</sub>(1) = <b>145.2</b>천원</span></div>
+  <div class="bd">
+   <div class="col" style="flex:1.3">
+    <table class="t calc">
+     <thead><tr><th>SoC</th><th>가격 (확률)</th><th>충전</th><th>대기</th><th>방전</th><th><i>V</i><sub>1</sub></th><th>최적</th></tr></thead>
+     <tbody>
+      <tr><td rowspan="2">0</td><td>80 (0.5)</td><td class="best">−80+134 = 54</td><td>0+44.4 = 44.4</td><td class="na">—</td><td class="v">54</td><td>충전</td></tr>
+      <tr><td>120 (0.5)</td><td>−120+134 = 14</td><td class="best">44.4</td><td class="na">—</td><td class="v">44.4</td><td>대기</td></tr>
+      <tr class="sep"><td rowspan="2" style="background:var(--sky);color:var(--blue)"><b>1<br><span class="note">시작</span></b></td><td>80 (0.5)</td><td class="best">−80+216 = 136</td><td>0+134 = 134</td><td>70+44.4 = 114.4</td><td class="v">136</td><td>충전</td></tr>
+      <tr><td>120 (0.5)</td><td>−120+216 = 96</td><td>134</td><td class="best">110+44.4 = 154.4</td><td class="v">154.4</td><td>방전</td></tr>
+      <tr class="sep"><td rowspan="2">2</td><td>80 (0.5)</td><td class="na">—</td><td class="best">0+216 = 216</td><td>70+134 = 204</td><td class="v">216</td><td>대기</td></tr>
+      <tr><td>120 (0.5)</td><td class="na">—</td><td>216</td><td class="best">110+134 = 244</td><td class="v">244</td><td>방전</td></tr>
+     </tbody>
+    </table>
+    <div class="eq num" style="font-size:1em;font-family:var(--mono)">V̄₁(1) = 0.5 × 136 + 0.5 × 154.4 = 145.2</div>
+   </div>
+   <div class="col">
+    <ul class="g">
+     <li><b>가격 80</b> → 충전 (136 vs 대기 134)
+      <ul><li>t=2에 SoC 2면 "지금 하나 팔고, t=3에 하나 더" 두 번 팔 기회</li></ul></li>
+     <li><b>가격 120</b> → 방전 (154.4)
+      <ul><li>지금 110을 확정하고, 빈 배터리로 t=2의 60원 충전 기회(44.4)를 노림</li></ul></li>
+     <li><b>두 경우 모두 행동한다</b>
+      <ul><li>평균가격(100원)만 보면 t=1은 '애매한 시간'이지만, 가격을 확인한 뒤엔 어느 쪽이든 할 일이 있음</li></ul></li>
+    </ul>
+    <div class="box"><h4>계산량 확인</h4>3시간 × 6칸 × 최대 3행동 = <b>54</b>개 값 비교로 정책 전체 완성</div>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">11</span></footer>
+ </div>
+</section>
+
+<!-- 12. Step 4 정책 + 시뮬레이터 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Step 4</span><h2>최적 정책표 읽기와 경로 시뮬레이션</h2><span class="tag">BESS 3시간 예제</span></header>
+  <div class="hm"><b class="k">핵심</b>정책표 하나로 8개 가격 경로 어디서든 즉시 행동을 정할 수 있다</div>
+  <div class="bd">
+   <div class="col">
+    <div class="pm" id="pm"></div>
+    <p class="note" style="margin:0">칸 안 왼쪽 = 낮은 가격, 오른쪽 = 높은 가격일 때의 행동 &nbsp;
+     <span class="a-c" style="padding:0 .3em">충전</span> <span class="a-w" style="padding:0 .3em">대기</span> <span class="a-d" style="padding:0 .3em">방전</span></p>
+    <ul class="g">
+     <li><b>읽는 법</b>: t=2에 SoC 1이면 가격과 무관하게 대기</li>
+     <li><b>정책 ≠ 계획</b>: 경로마다 실제 행동 순서가 달라진다</li>
+     <li><b>기대값 최적 ≠ 매번 최적</b>
+      <ul><li>80·60·90원 경로: SDP 50 &lt; 평균가격 계획 80</li>
+       <li>120·140·180원 경로: SDP 110, 사후최적 180</li>
+       <li>SDP는 8개 경로의 <u>확률가중 평균</u>을 최대화할 뿐이다</li></ul></li>
+    </ul>
+   </div>
+   <div class="col sim">
+    <div class="ctrl" id="ctrl"></div>
+    <table class="t" id="simt">
+     <thead><tr><th>시간</th><th>가격</th><th>시작 SoC</th><th>행동</th><th>수익</th><th>끝 SoC</th></tr></thead>
+     <tbody></tbody>
+    </table>
+    <div class="res">
+     <div>SDP 정책<b id="r-sdp">–</b></div>
+     <div>평균가격 계획<b id="r-det">–</b></div>
+     <div>완전예측(사후최적)<b id="r-pf">–</b></div>
+    </div>
+    <p class="note" style="margin:0">가격 버튼을 바꿔 보세요 (단위: 천원). 평균가격 계획 = 대기·대기·방전 고정</p>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">12</span></footer>
+ </div>
+</section>
+
+<!-- 13. 비교 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅳ</span><h2>평균가격 계획 vs SDP vs 완전예측</h2><span class="tag">결과 해석</span></header>
+  <div class="hm"><b class="k">핵심</b>가격을 보고 반응하는 정책이 평균가격 고정계획보다 기대수익 8.4% 높다</div>
+  <div class="bd">
+   <div class="col">
+    <div class="bars">
+     <div class="bar"><span>평균가격 계획</span><div class="tr"><div class="fl" style="width:74.4%;background:#8a96ab">134.0</div></div></div>
+     <div class="bar"><span><b>SDP 정책</b></span><div class="tr"><div class="fl" style="width:80.7%;background:var(--navy)">145.2</div></div></div>
+     <div class="bar"><span>완전예측 (상한)</span><div class="tr"><div class="fl" style="width:92.9%;background:var(--teal)">167.2</div></div></div>
+    </div>
+    <p class="note" style="margin:0">막대 축: 0 ~ 180천원, 8개 경로 확률가중 기대수익</p>
+    <table class="t">
+     <thead><tr><th>지표</th><th>정의</th><th>값</th></tr></thead>
+     <tbody>
+      <tr><td class="l"><b>적응의 가치</b></td><td class="l">SDP − 평균가격 계획</td><td class="v">+11.2 (8.4%)</td></tr>
+      <tr><td class="l"><b>EVPI</b></td><td class="l">완전예측 − SDP</td><td class="v">22.0</td></tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="col">
+    <ul class="g">
+     <li><b>평균가격 계획</b> (100 / 92 / 144원으로 최적화)
+      <ul><li>결과: 대기 → 대기 → 방전. t=1의 기회를 모두 버림</li>
+       <li>평균으로 계획하면 가격 변동이 주는 선택권 가치가 사라진다
+        <ul><li>𝔼[max(·)] ≥ max(𝔼[·]) (Jensen 부등식)</li></ul></li></ul></li>
+     <li><b>EVPI 22.0</b> = 예측을 완벽히 하면 더 벌 수 있는 상한
+      <ul><li>가격예측 시스템에 이보다 많이 쓰면 손해</li></ul></li>
+     <li><b>주의</b>: 예제 수치는 교육용 가정값
+      <ul><li>실제 SMP 분포, 효율 손실, 출력·용량 비율에 따라 크기는 달라진다</li></ul></li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">13</span></footer>
+ </div>
+</section>
+
+<!-- 14. 확장 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">Ⅳ</span><h2>현실 문제로의 확장</h2><span class="tag">확장</span></header>
+  <div class="hm"><b class="k">핵심</b>구조는 그대로 두고 상태·행동·전이를 현실적으로 바꾸면 된다. 대가는 계산량이다</div>
+  <div class="bd">
+   <div class="col">
+    <table class="t">
+     <thead><tr><th>예제 가정</th><th>현실 확장</th><th>모델에서 바뀌는 곳</th></tr></thead>
+     <tbody>
+      <tr><td class="l">효율 100%</td><td class="l">충·방전 효율 η<sub>c</sub>, η<sub>d</sub> (왕복 85~90%)</td><td class="l">전이식 · 보상식</td></tr>
+      <tr><td class="l">SoC 3단계</td><td class="l">연속 SoC</td><td class="l">격자 세분화 + 보간</td></tr>
+      <tr><td class="l">가격 독립</td><td class="l">가격 자기상관 (마르코프 체인)</td><td class="l">상태에 전 시간 가격 추가</td></tr>
+      <tr><td class="l">3시간</td><td class="l">24시간 × 15분 = 96단계</td><td class="l">단계 수</td></tr>
+      <tr><td class="l">에너지시장 1개</td><td class="l">에너지 + 예비력 동시 입찰</td><td class="l">행동 차원 증가</td></tr>
+      <tr><td class="l">종료가치 0</td><td class="l">다음 날 기대가치</td><td class="l"><i>V</i><sub><i>T</i>+1</sub></td></tr>
+     </tbody>
+    </table>
+   </div>
+   <div class="col">
+    <ul class="g">
+     <li><b>SDDP</b> (Stochastic Dual DP)
+      <ul><li>가치함수가 볼록이면 절편평면(cut)으로 근사</li>
+       <li>수력·ESS 장기운영의 표준 도구</li></ul></li>
+     <li><b>근사 DP (ADP)</b>
+      <ul><li>가치함수를 회귀식·신경망으로 근사</li></ul></li>
+     <li><b>강화학습</b>
+      <ul><li>Q-learning = Bellman 방정식의 표본 버전</li>
+       <li>확률분포를 몰라도 데이터로 학습 가능</li>
+       <li>대신 수렴·안전성 검증이 어렵다</li></ul></li>
+     <li><b>오늘의 연결고리</b>: 셋 모두 'V̄<sub>t+1</sub>(s′)를 어떻게 계산·근사하느냐'의 차이</li>
+    </ul>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">14</span></footer>
+ </div>
+</section>
+
+<!-- 15. 요약 & 토론 -->
+<section class="slide">
+ <div class="in">
+  <header class="sh"><span class="sec">정리</span><h2>요약과 토론 문제</h2><span class="tag">마무리</span></header>
+  <div class="bd" style="margin-top:1.3em">
+   <div class="col">
+    <ul class="g">
+     <li><b>SDP = 상태 · 결정 · 불확실성 · 전이 · 보상</b>을 Bellman 방정식으로 묶은 것</li>
+     <li><b>후방귀납법</b>: 마지막 시간부터 (SoC, 가격) 표를 채우고 확률로 평균</li>
+     <li><b>예제의 교훈</b>
+      <ul><li>출력 제약이 '싸도 충전 안 함'을 만든다 (한계가치 0)</li>
+       <li>결과물은 계획표가 아니라 정책표</li>
+       <li>적응의 가치 +11.2, 완전예측 상한까지 22.0</li></ul></li>
+     <li><b>한계</b>: 상태가 늘면 계산량이 곱으로 증가 → 근사 기법 필요</li>
+    </ul>
+   </div>
+   <div class="col">
+    <details><summary>① 열화비용이 30원/kWh로 오르면 t=1, 가격 80일 때 행동은?</summary>
+     <p><b>대기</b>로 바뀐다. V̄₁(1) = 118.2천원. 방전 마진이 줄어 t=2의 '하나 팔고 하나 더' 이점이 사라진다.</p></details>
+    <details><summary>② 남은 에너지를 100원/kWh로 평가(종료가치)하면?</summary>
+     <p>t=1 가격 80 → <b>충전</b>, 가격 120 → <b>대기</b>(방전에서 바뀜). 120원에 팔기보다 들고 있는 편이 낫다. 종료가치 설정이 정책을 바꾼다.</p></details>
+    <details><summary>③ 출력을 2 MW로 늘리면 기대수익은?</summary>
+     <p><b>193.4천원</b> (+48.2). t=3에 2 MWh를 한 번에 팔 수 있어 두 번째 MWh의 한계가치가 0에서 134로 오른다.</p></details>
+    <details><summary>④ 가격을 '본 뒤'가 아니라 '보기 전'에 결정해야 한다면 Bellman 식은 어떻게 바뀌나?</summary>
+     <p>max와 𝔼의 순서가 바뀐다: V̄<sub>t</sub>(s) = max<sub>a</sub> 𝔼<sub>p</sub>[r(a,p) + V̄<sub>t+1</sub>(s+a)]. 정보가 늦게 오므로 가치는 같거나 낮아진다.</p></details>
+    <p class="note" style="margin:0">문항을 눌러 답을 확인하세요</p>
+   </div>
+  </div>
+  <footer class="sf"><span>확률적 동적계획법 입문 | BESS 차익거래 예제</span><span class="pg">15</span></footer>
+ </div>
+</section>
+
+</div>
+
+<div class="nav">
+ <button class="pv" id="pv" aria-label="이전 슬라이드">◀</button>
+ <span class="ct" id="ct">1 / 15</span>
+ <button class="nx" id="nx" aria-label="다음 슬라이드">▶</button>
+ <button id="pm-btn">발표 모드</button>
+</div>
+
+<script>
+(function(){
+  // ---- 예제 데이터 (후방귀납 결과를 브라우저에서 다시 계산) ----
+  var P={1:[80,120],2:[60,140],3:[90,180]};       // [낮음, 높음]
+  var PR={1:[.5,.5],2:[.6,.4],3:[.4,.6]};
+  var DEG=10, S=[0,1,2], ACT=[1,0,-1];
+  function r(a,p){return a===1?-p:(a===-1?p-DEG:0);}
+  var Vb={4:[0,0,0]}, pol={};
+  for(var t=3;t>=1;t--){
+    Vb[t]=[0,0,0];
+    S.forEach(function(s){
+      P[t].forEach(function(p,i){
+        var best=-1e9,ba=0;
+        ACT.forEach(function(a){var s2=s+a;if(s2<0||s2>2)return;var q=r(a,p)+Vb[t+1][s2];if(q>best+1e-9){best=q;ba=a;}});
+        pol[t+'|'+s+'|'+i]=ba; Vb[t][s]+=PR[t][i]*best;
+      });
+    });
+  }
+  var NAME={1:'충전',0:'대기','-1':'방전'}, CLS={1:'a-c',0:'a-w','-1':'a-d'};
+
+  // 정책표
+  var pm=document.getElementById('pm'), h='<div class="h"></div>';
+  [1,2,3].forEach(function(t){h+='<div class="h">t = '+t+'<br><span class="note">'+P[t][0]+' / '+P[t][1]+'원</span></div>';});
+  [2,1,0].forEach(function(s){
+    h+='<div class="h">SoC '+s+'</div>';
+    [1,2,3].forEach(function(t){
+      h+='<div class="c">';
+      [0,1].forEach(function(i){var a=pol[t+'|'+s+'|'+i];h+='<span class="'+CLS[a]+'">'+NAME[a]+'</span>';});
+      h+='</div>';
+    });
+  });
+  pm.innerHTML=h;
+
+  // 시뮬레이터
+  var sel={1:0,2:1,3:1};
+  var ctrl=document.getElementById('ctrl');
+  [1,2,3].forEach(function(t){
+    var g=document.createElement('div');g.className='grp';
+    g.innerHTML='<b>t='+t+'</b>';
+    [0,1].forEach(function(i){
+      var b=document.createElement('button');b.type='button';b.id='sim-'+t+'-'+i;
+      b.textContent=P[t][i]+'원';b.setAttribute('aria-pressed',sel[t]===i?'true':'false');
+      b.addEventListener('click',function(){sel[t]=i;[0,1].forEach(function(j){document.getElementById('sim-'+t+'-'+j).setAttribute('aria-pressed',j===i?'true':'false');});run();});
+      g.appendChild(b);
+    });
+    ctrl.appendChild(g);
+  });
+  function pf(prices){
+    var best=-1e9;
+    ACT.forEach(function(a1){ACT.forEach(function(a2){ACT.forEach(function(a3){
+      var s=1,v=0,ok=true;[a1,a2,a3].forEach(function(a,k){s+=a;if(s<0||s>2)ok=false;v+=r(a,prices[k]);});
+      if(ok&&v>best)best=v;});});});
+    return best;
+  }
+  function fmt(x){return (Math.round(x*10)/10).toFixed(1);}
+  function run(){
+    var s=1,tot=0,rows='',prices=[];
+    [1,2,3].forEach(function(t){
+      var i=sel[t],p=P[t][i],a=pol[t+'|'+s+'|'+i],rv=r(a,p);prices.push(p);
+      rows+='<tr><td>'+t+'</td><td>'+p+'</td><td>'+s+'</td><td><span class="'+CLS[a]+'" style="padding:0 .4em;border-radius:.2em;font-weight:700">'+NAME[a]+'</span></td><td>'+(rv>0?'+':'')+rv+'</td><td>'+(s+a)+'</td></tr>';
+      s+=a;tot+=rv;
+    });
+    rows+='<tr class="sep"><td colspan="4"><b>합계</b></td><td class="v">'+(tot>0?'+':'')+tot+'</td><td></td></tr>';
+    document.querySelector('#simt tbody').innerHTML=rows;
+    document.getElementById('r-sdp').textContent=fmt(tot);
+    document.getElementById('r-det').textContent=fmt(prices[2]-DEG);
+    document.getElementById('r-pf').textContent=fmt(pf(prices));
+  }
+  run();
+
+  // ---- 발표 모드 ----
+  var slides=[].slice.call(document.querySelectorAll('.slide')), cur=0, body=document.body;
+  var ct=document.getElementById('ct'), btn=document.getElementById('pm-btn');
+  function show(n){cur=Math.max(0,Math.min(slides.length-1,n));slides.forEach(function(el,k){el.classList.toggle('cur',k===cur);});ct.textContent=(cur+1)+' / '+slides.length;}
+  function nearest(){var best=0,bd=1e9;slides.forEach(function(el,k){var d=Math.abs(el.getBoundingClientRect().top);if(d<bd){bd=d;best=k;}});return best;}
+  function enter(){show(nearest());body.classList.add('present');btn.textContent='목록 보기';
+    try{var p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+  function exit(){body.classList.remove('present');btn.textContent='발표 모드';
+    try{if(document.fullscreenElement&&document.exitFullscreen){var p=document.exitFullscreen();if(p&&p.catch)p.catch(function(){});}}catch(e){}
+    slides[cur].scrollIntoView({block:'start'});}
+  btn.addEventListener('click',function(){body.classList.contains('present')?exit():enter();});
+  document.getElementById('pv').addEventListener('click',function(){show(cur-1);});
+  document.getElementById('nx').addEventListener('click',function(){show(cur+1);});
+  document.addEventListener('keydown',function(e){
+    if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+    if(!body.classList.contains('present')){if(e.key==='f'||e.key==='F')enter();return;}
+    if(['ArrowRight','PageDown',' '].indexOf(e.key)>=0){e.preventDefault();show(cur+1);}
+    else if(['ArrowLeft','PageUp'].indexOf(e.key)>=0){e.preventDefault();show(cur-1);}
+    else if(e.key==='Escape'){exit();}
+    else if(e.key==='Home'){show(0);}else if(e.key==='End'){show(slides.length-1);}
+  });
+  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&body.classList.contains('present'))exit();});
+})();
+</script>
