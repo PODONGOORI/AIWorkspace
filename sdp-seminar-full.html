@@ -435,6 +435,7 @@ svg#tnode{height:310px!important;width:100%}
    <div>
     <svg class="tr" id="g4" width="620" height="330" viewBox="0 0 620 330" style="height:auto" role="img" aria-label="최적 길의 나머지를 더 싼 나머지로 바꿔 끼우는 그림"></svg>
     <div class="box" style="padding:10px 16px"><h4>최적성 원리 (Bellman, 1957)</h4>최적 길의 어느 뒷부분도 그 자체로 최적 길이다</div>
+    <details><summary>Q. $V(C)$와 $V(D)$는?</summary><p>$V(C)=3$, $V(D)=5$. 둘 다 E로 가는 화살표가 하나뿐이다.</p></details>
    </div>
    <div>
     <div class="sub"><span class="num">1</span><span class="t">바탕 사실로 증명하기</span></div>
@@ -445,7 +446,6 @@ svg#tnode{height:310px!important;width:100%}
     </ul>
     <div class="sub" style="margin-top:4px"><span class="num">2</span><span class="t">그래서 점마다 V 하나</span></div>
     <div class="box" style="padding:10px 16px"><b>이정표</b> $V(x)$: 점 $x$에 세우는 팻말 "여기서 도착까지 최소 ○원"<br>도착점은 $V(E)=0$, 우리가 원하는 답은 $V(S)$</div>
-    <details><summary>Q. $V(C)$와 $V(D)$는?</summary><p>$V(C)=3$, $V(D)=5$. 둘 다 E로 가는 화살표가 하나뿐이다.</p></details>
    </div>
   </div>
  </div>
@@ -1039,7 +1039,7 @@ svg#tnode{height:310px!important;width:100%}
   }
   var COLN=['출발','1단계','2단계','도착'];
   // 3쪽: 기본 그래프
-  graph(document.getElementById('g1'),{W:1123,H:230,padT:40,padB:40,r:26});
+  graph(document.getElementById('g1'),{W:1123,H:196,padT:34,padB:30,r:24});
   graph(document.getElementById('g15'),{W:1123,H:190,padT:34,padB:30,r:22});
   // 5쪽: 첫 걸음 + 나머지
   (function(){var svg=document.getElementById('g3');if(!svg)return;var on={SB:1,BC:1,CE:1};
@@ -1096,7 +1096,7 @@ svg#tnode{height:310px!important;width:100%}
   });
   // 13쪽: 답 읽기
   (function(){var svg=document.getElementById('s4');if(!svg)return;var opt={},gr={SA:1,AD:1,DE:1};var x='S';while(CH[x]){opt[x+CH[x]]=1;x=CH[x];}
-    graph(svg,{W:1015,H:232,padL:70,padR:60,padT:56,padB:40,r:24,val:function(n){return 'V = '+V[n];},
+    graph(svg,{W:1015,H:232,padL:70,padR:60,padT:52,padB:52,r:24,val:function(n){return 'V = '+V[n];},
       ncls:function(n){return n==='S'?'st':'';},
       ecls:function(e){var k=ekey(e);return opt[k]?'hl':(gr[k]?'gr':'f');}});
   })();
@@ -1124,7 +1124,7 @@ svg#tnode{height:310px!important;width:100%}
   })();
   // 합본: 미니 단계 그림
   [[1,2],[2,1],[3,0]].forEach(function(st){var svg=document.getElementById('m'+st[0]);if(!svg)return;var cur=st[1];
-    graph(svg,{W:360,H:250,padL:26,padR:26,padT:40,padB:34,r:16,
+    graph(svg,{W:360,H:250,padL:26,padR:26,padT:40,padB:46,r:16,
       ncls:function(n){var c=COL[n];return c===cur?'on':(c<cur?'dash':'');},
       val:function(n){var c=COL[n];return c>=cur?String(V[n]):null;},
       ecls:function(e){var c=COL[e[0]];if(c<cur)return 'dsh';if(c===cur)return CH[e[0]]===e[1]?'hl':'f';return 'done';}});});
@@ -1213,7 +1213,7 @@ svg#tnode{height:310px!important;width:100%}
   [3,2,1].forEach(function(T){
     var el=document.getElementById('sfig'+T);if(!el)return;
     function chosen(v,a){var r0=[];[0,1].forEach(function(i){if(pol[T+'|'+v+'|'+i]===a)r0.push(i);});return r0;}
-    trellis(el,{W:1015,H:214,padL:78,padR:40,padT:42,padB:30,r:19,
+    trellis(el,{W:1015,H:214,padL:78,padR:40,padT:42,padB:42,r:19,
       col:function(t){return t<4?('t = '+t+' · '+P[t][0]+' / '+P[t][1]+'원'+(t<T?' (아직)':t===T?' ← 이번 시간':'')):'끝';},
       colcls:function(t){return t<T?'dim':'';},
       edge:function(t,v,a){if(t<T)return 'dsh';if(t>T)return 'done';return chosen(v,a).length?'hl':'f';},
@@ -1285,7 +1285,7 @@ svg#tnode{height:310px!important;width:100%}
     var s=1,tot=0,pr=[],hl={},lab={},onN={'1|1':1};
     [1,2,3].forEach(function(t){var i=sel[t],p=P[t][i],a=pol[t+'|'+s+'|'+i],rv=r(a,p);pr.push(p);
       hl[t+'|'+s+'|'+a]=1;lab[t+'|'+s+'|'+a]=NAME[a]+' '+(rv>0?'+':'')+rv;s+=a;onN[(t+1)+'|'+s]=1;tot+=rv;});
-    trellis(document.getElementById('tsim'),{W:572,H:322,padL:62,padT:40,padB:16,r:17,
+    trellis(document.getElementById('tsim'),{W:572,H:322,padL:62,padT:40,padB:26,r:17,
       col:function(t){return t<4?'t = '+t+' · '+pr[t-1]+'원':'끝';},
       edge:function(t,s0,a){return hl[t+'|'+s0+'|'+a]?'hl':'f';},
       elab:function(t,s0,a){return lab[t+'|'+s0+'|'+a]||null;},

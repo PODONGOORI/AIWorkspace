@@ -1,28 +1,32 @@
 #!/usr/bin/env node
 /* 덱 검사: 슬라이드마다 넘침·제목 길이·아래 여백을 재고 PNG를 저장한다.
-   사용: node check_deck.js deck.html [출력폴더] [--mathjax 로컬/tex-svg.js]
+   사용: node check_deck.js deck.html [출력폴더] [--mathjax 경로] [--fonts fontsource폴더]
    - 출력폴더에 s1.png, s2.png … 저장 (기본: deck 옆 _check/)
    - MathJax CDN이 막힌 환경이면 --mathjax로 로컬 파일을 지정 (npm pack mathjax@3.2.2)
    판정 (슬라이드별):
      over N   : 본문(.bd) 밖으로 N px 넘침 → 반드시 고친다
      note N   : 하단 요약 바와 N px 겹침 → 고친다 (단, 칸의 빈 padding만 겹치면 무시 가능)
      TITLE    : 제목이 길어 오른쪽 선이 사라짐 → 주제를 줄인다
+     SVG id N : 그림 내용이 자기 viewBox 밖으로 N 넘침 → 그림 H/padB를 viewBox와 맞춘다 (구분선·표와 겹치는 원인)
      gap a/b  : 칸별 아래 여백 px. 60 이상이면 내용·그림을 키워 채운다
 */
 const fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
+const { setupRoutes } = require('./_routes');
 const args = process.argv.slice(2);
 const file = path.resolve(args[0]);
 let out = args[1] && !args[1].startsWith('--') ? path.resolve(args[1]) : path.join(path.dirname(file), '_check');
-const mi = args.indexOf('--mathjax'); const mj = mi > -1 ? args[mi + 1] : null;
 fs.mkdirSync(out, { recursive: true });
 (async () => {
   const b = await chromium.launch(); const pg = await b.newPage({ viewport: { width: 1340, height: 900 } });
   const errs = []; pg.on('pageerror', e => errs.push(e.message));
-  if (mj) await pg.route('https://cdnjs.cloudflare.com/**', r => r.fulfill({ contentType: 'application/javascript', body: fs.readFileSync(mj, 'utf8') }));
+  await setupRoutes(pg, args);
   await pg.goto('file://' + file); await pg.waitForTimeout(3500);
   const res = await pg.evaluate(() => [...document.querySelectorAll('.slide')].map((s, i) => {
-    const o = []; const rule = s.querySelector('.hd .rule'); if (rule && rule.getBoundingClientRect().width < 30) o.push('TITLE');
+    const o = [];
+    s.querySelectorAll('svg.tr').forEach(g => { const vb = g.viewBox.baseVal; if (!vb || !vb.width) return; let bb; try { bb = g.getBBox(); } catch (e) { return; }
+      const ov = Math.max(vb.x - bb.x, vb.y - bb.y, bb.x + bb.width - vb.x - vb.width, bb.y + bb.height - vb.y - vb.height); if (ov > 2) o.push('SVG ' + (g.id || '?') + ' ' + Math.round(ov)); });
+    const rule = s.querySelector('.hd .rule'); if (rule && rule.getBoundingClientRect().width < 30) o.push('TITLE');
     const bd = s.querySelector('.bd');
     if (bd) {
       const L = bd.getBoundingClientRect(); let over = 0;

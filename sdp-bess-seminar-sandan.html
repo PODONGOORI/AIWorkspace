@@ -969,7 +969,7 @@ table.t.c.tight td,table.t.c.tight th{padding:5px 5px!important}
   [3,2,1].forEach(function(T){
     var el=document.getElementById('sfig'+T);if(!el)return;
     function chosen(v,a){var r0=[];[0,1].forEach(function(i){if(pol[T+'|'+v+'|'+i]===a)r0.push(i);});return r0;}
-    trellis(el,{W:1015,H:214,padL:78,padR:40,padT:42,padB:30,r:19,
+    trellis(el,{W:1015,H:214,padL:78,padR:40,padT:42,padB:42,r:19,
       col:function(t){return t<4?('t = '+t+' · '+P[t][0]+' / '+P[t][1]+'원'+(t<T?' (아직)':t===T?' ← 이번 시간':'')):'끝';},
       colcls:function(t){return t<T?'dim':'';},
       edge:function(t,v,a){if(t<T)return 'dsh';if(t>T)return 'done';return chosen(v,a).length?'hl':'f';},
@@ -1041,7 +1041,7 @@ table.t.c.tight td,table.t.c.tight th{padding:5px 5px!important}
     var s=1,tot=0,pr=[],hl={},lab={},onN={'1|1':1};
     [1,2,3].forEach(function(t){var i=sel[t],p=P[t][i],a=pol[t+'|'+s+'|'+i],rv=r(a,p);pr.push(p);
       hl[t+'|'+s+'|'+a]=1;lab[t+'|'+s+'|'+a]=NAME[a]+' '+(rv>0?'+':'')+rv;s+=a;onN[(t+1)+'|'+s]=1;tot+=rv;});
-    trellis(document.getElementById('tsim'),{W:572,H:322,padL:62,padT:40,padB:16,r:17,
+    trellis(document.getElementById('tsim'),{W:572,H:322,padL:62,padT:40,padB:26,r:17,
       col:function(t){return t<4?'t = '+t+' · '+pr[t-1]+'원':'끝';},
       edge:function(t,s0,a){return hl[t+'|'+s0+'|'+a]?'hl':'f';},
       elab:function(t,s0,a){return lab[t+'|'+s0+'|'+a]||null;},

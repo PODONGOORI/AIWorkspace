@@ -12,7 +12,7 @@ description: PPT처럼 넘겨 보는 16:9 HTML 발표자료를 국회·공공기
 2. 예시 슬라이드(표지, 목차, 기본형, 탭형)를 지우거나 고쳐 내용을 채운다. 부품과 HTML 조각은 `references/components.md`, 색은 `references/palette.md`를 본다.
 3. 그림은 스크립트의 `/* ===== 덱별 그림은 여기에 ===== */` 자리에 `PPT.graph(...)` 등으로 그린다. 예시 그림(`fig1`)은 지운다.
 4. `python3 scripts/inline_assets.py 덱.html`로 표지·목차 일러스트(`{{COVER_ILL}}`)를 넣는다.
-5. `node scripts/check_deck.js 덱.html` (CDN이 막힌 환경이면 `--mathjax 로컬경로`)로 검사하고, 문제를 고친 뒤 PNG 몇 장을 직접 열어 본다. 아래 "검사 기준"을 통과할 때까지 반복한다.
+5. `node scripts/check_deck.js 덱.html`로 검사하고, 문제를 고친 뒤 PNG 몇 장을 직접 열어 본다. 아래 "검사 기준"을 통과할 때까지 반복한다.
 
 ## 양식 규칙 (왜 그런지 함께)
 - **캔버스는 1280×720 고정**. 화면에 맞춰 통째로 축소되므로 px 좌표가 곧 인쇄 결과다. 슬라이드 틀(`.hd`, `.tag`, `.ins`, `.bd`, `.pg`)의 위치는 바꾸지 않는다. 장마다 틀이 같아야 넘길 때 시선이 흔들리지 않는다.
@@ -30,13 +30,15 @@ description: PPT처럼 넘겨 보는 16:9 HTML 발표자료를 국회·공공기
 - **색은 남색 + 회색 단계만**(`references/palette.md`). 새 색을 들이지 않는다. 한 가지 색으로 위계가 정리되어 보고서다운 인상을 준다.
 
 ## 검사 기준 (check_deck.js 결과)
+- **실제 글꼴로 검사한다.** 웹 글꼴(Google Fonts·cdnjs)이 막힌 환경이면 `--fonts <@fontsource/noto-sans-kr 폴더> --mathjax <mathjax tex-svg.js>`를 준다(`npm pack @fontsource/noto-sans-kr`, `npm pack mathjax@3.2.2`로 받는다). 대체 글꼴로 검사하면 줄바꿈이 달라져, 통과했는데 실제 화면에선 넘치거나 비는 일이 생긴다.
+- `SVG id N`: 그림 내용이 자기 viewBox 밖으로 나감. `PPT.graph`의 `H`를 svg의 viewBox 높이와 같게, 맨 아래 행 라벨이 들어가게 `padB`를 키운다. 이게 그림이 아래 구분선·표에 겹치는 원인이다.
 - `over`, `TITLE`, 수식 오류, 스크립트 오류: 0이어야 한다.
 - `note`: 실제 글자·표가 요약 바에 가리면 고친다(빈 여백만 겹친 경우는 괜찮다).
 - `gap`: 칸마다 대략 30px 이하. 60px 이상이면 채운다.
 - PNG를 열어 글자 겹침, 잘린 표, 한 글자 줄넘김을 눈으로 확인한다. 측정으로는 그림 속 글자 겹침을 못 잡는다.
 
 ## 배포 메모
-- PDF가 필요하면 `node scripts/export_pdf.js 덱.html [출력.pdf]` (CDN이 막힌 환경이면 `--mathjax 로컬경로`). 슬라이드 1장이 PDF 1쪽(1280×720)이 되고, 툴바·발표 버튼은 빠진다.
+- PDF가 필요하면 `node scripts/export_pdf.js 덱.html [출력.pdf]`, 웹 글꼴이 막힌 환경이면 위와 같이 `--fonts`·`--mathjax`를 반드시 준다(안 주면 대체 글꼴로 저장돼 HTML과 달라진다). 슬라이드 1장이 PDF 1쪽(1280×720)이 되고, 툴바·발표 버튼은 빠진다.
 - 파일 첫 줄의 `<meta charset="utf-8">`은 지우지 않는다. 이게 없으면 메일 미리보기·아이패드 파일 앱처럼 UTF-8을 기본으로 가정하지 않는 곳에서 한글이 깨진다.
 - 메일 첨부 미리보기(Outlook 등)는 CSS·스크립트를 제대로 실행하지 못해 배치가 겹친다. 받은 사람은 파일을 Chrome·Safari·Edge로 열어야 한다고 안내한다.
 - 외부 리소스는 Google Fonts(Noto Sans KR)와 cdnjs의 MathJax 3.2.2만 쓴다. 나머지는 모두 인라인(이미지는 data URI).
