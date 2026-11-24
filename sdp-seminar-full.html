@@ -360,7 +360,7 @@ body,.slide,.slide *{word-break:keep-all;overflow-wrap:break-word}
  <h2>Contents</h2>
  <ol>
   <li>DP 기초<small>가장 싼 길 → 바탕 사실 3개 → 최적성 원리 → Bellman 식 → 후방귀납</small></li>
-  <li>왜 SDP인가<small>가격을 알면 쉬운 문제, 모르면 어려운 문제</small></li>
+  <li>왜 SDP인가<small>다음 단계가 확률로 정해지면? 가격을 알면 쉽고, 모르면 어렵다</small></li>
   <li>SDP 기초<small>길 찾기 → 배터리 상태 지도, 기대값이 들어간 Bellman 식</small></li>
   <li>BESS 3시간 예제<small>한 시간씩 거꾸로 풀고, 정책표로 운전하기</small></li>
   <li>결과와 정리<small>평균가격 계획 · SDP · 완전예측 비교, 지식 지도</small></li>
@@ -523,6 +523,36 @@ body,.slide,.slide *{word-break:keep-all;overflow-wrap:break-word}
     <span class="lbl">길은 단계마다 곱해지고, DP는 '점 수 × 갈래 수'만큼 더해진다. 점(상태)이 많아지면 DP도 무거워진다 = 차원의 저주</span>
    </div>
   </div>
+ </div>
+ <div class="pg"></div>
+</section>
+
+<section class="slide">
+ <div class="hd"><span class="no">02</span><span class="tt"><span class="sec2">왜 SDP인가</span><span class="sep">|</span>다음 점이 확률로 정해진다면?</span><span class="rule"></span></div>
+ <div class="tag">왜 SDP인가</div>
+ <div class="ins">화살표를 골라도 어디에 도착할지는 확률로 정해진다 → 도착할 수 있는 점들의 이정표를 확률로 평균(기대값) 내서 비교한다</div>
+ <div class="bd" style="display:flex;flex-direction:column;gap:8px">
+  <svg class="tr" id="gbr" width="1123" height="250" viewBox="0 0 1123 250" style="height:250px" role="img" aria-label="A에서 C 방향을 고르면 90% C, 10% D, D 방향을 고르면 60% D, 40% 우회로에 도착. 기대 비용 10.2와 11.8"></svg>
+  <div class="two" style="flex:1;min-height:0;height:auto;border-top:1px solid var(--g200);padding-top:10px;padding-bottom:54px">
+   <div>
+    <div class="sub"><span class="num">1</span><span class="t">확률이 없을 때 (지금까지의 DP)</span></div>
+    <table class="t c tight">
+     <thead><tr><th>A에서 고르는 길</th><th>통행료 + 도착 이정표</th><th>합</th></tr></thead>
+     <tbody>
+      <tr><td class="l">C 방향 (반드시 C 도착)</td><td>$7+3$</td><td>10</td></tr>
+      <tr><td class="l">D 방향 (반드시 D 도착)</td><td class="best">$4+5$</td><td class="best">9 → D 방향</td></tr>
+     </tbody>
+    </table>
+   </div>
+   <div>
+    <div class="sub"><span class="num">2</span><span class="t">확률이 있을 때 (확률적 DP)</span></div>
+    <div class="eq sm" style="padding:4px 8px">\[ V(x)=\min_{a}\Big\{c(x,a)+\underbrace{\textstyle\sum_{y}P(y\mid x,a)\,V(y)}_{\text{도착 이정표의 기대값}}\Big\} \]</div>
+    <ul class="ul">
+     <li><b>답이 바뀐다</b>: C 방향 10.2 &lt; D 방향 11.8</li>
+    </ul>
+   </div>
+  </div>
+  <div class="note"><b>배터리에서는</b>도착하는 저장량은 정해져 있지만 '다음 시간 가격'이 확률적이다 → 같은 방법(기대값)으로 푼다</div>
  </div>
  <div class="pg"></div>
 </section>
@@ -1130,10 +1160,32 @@ body,.slide,.slide *{word-break:keep-all;overflow-wrap:break-word}
       ncls:function(n){var c=COL[n];return c===cur?'on':(c<cur?'dash':'');},
       val:function(n){var c=COL[n];return c>=cur?String(V[n]):null;},
       ecls:function(e){var c=COL[e[0]];if(c<cur)return 'dsh';if(c===cur)return CH[e[0]]===e[1]?'hl':'f';return 'done';}});});
+  // 합본: 확률 브릿지 그림
+  (function(){var svg=document.getElementById('gbr');if(!svg)return;defs(svg);
+    var A=[80,125];svg.appendChild(E('circle',{cx:A[0],cy:A[1],r:32,'class':'nd st'}));svg.appendChild(E('text',{x:A[0],y:A[1]+6,'text-anchor':'middle','class':'nl'},'A'));
+    svg.appendChild(E('text',{x:A[0],y:A[1]+56,'text-anchor':'middle','class':'bt3'},'지금 여기서 고른다'));
+    var acts=[{y:62,t:'C 방향 · 통행료 7',c:7,out:[{n:'C',v:3,p:.9,y:24},{n:'D',v:5,p:.1,y:96}]},
+              {y:188,t:'D 방향 · 통행료 4',c:4,out:[{n:'D',v:5,p:.6,y:154},{n:'우회',v:12,p:.4,y:226}]}];
+    acts.forEach(function(a){a.ev=Math.round((a.c+a.out.reduce(function(s,o){return s+o.p*o.v;},0))*10)/10;});
+    var best=Math.min(acts[0].ev,acts[1].ev);
+    acts.forEach(function(a){var on=a.ev===best;
+      arrow(svg,A[0],A[1],250,a.y,on?'hl':'w',on?'c':'w',34,4);
+      svg.appendChild(E('rect',{x:252,y:a.y-20,width:172,height:40,rx:8,'class':'bx'+(on?' root':'')}));
+      svg.appendChild(E('text',{x:338,y:a.y+6,'text-anchor':'middle','class':'bt',style:'font-size:14.5px'},a.t));
+      a.out.forEach(function(o){arrow(svg,424,a.y,582,o.y,'done','f',2,22);
+        svg.appendChild(E('text',{x:492,y:(a.y+o.y)/2+(o.y<a.y?-6:14),'text-anchor':'middle','class':'cost'},Math.round(o.p*100)+'%'));
+        svg.appendChild(E('circle',{cx:582,cy:o.y,r:20,'class':'nd'+(o.n==='우회'?' dash':'')}));
+        svg.appendChild(E('text',{x:582,y:o.y+5,'text-anchor':'middle','class':'nl',style:'font-size:'+(o.n==='우회'?12:16)+'px'},o.n));
+        svg.appendChild(E('text',{x:610,y:o.y+5,'class':'ax'},'이정표 '+o.v));});
+      var bx=740;svg.appendChild(E('line',{x1:700,y1:a.y,x2:bx-6,y2:a.y,'class':'e f'}));
+      svg.appendChild(E('rect',{x:bx,y:a.y-22,width:372,height:44,rx:8,'class':'bx'+(on?' on':'')}));
+      var terms=a.out.map(function(o){return o.p+'×'+o.v;}).join(' + ');
+      svg.appendChild(E('text',{x:bx+14,y:a.y+6,'class':'bt'+(on?' inv':''),style:'font-size:14.5px'},a.c+' + ('+terms+') = '+a.ev+(on?'  ✓ 더 작다':'')));});
+  })();
   // 합본: 지식 지도
   (function(){var svg=document.getElementById('g20');if(!svg)return;defs(svg);
     var w=170,h=62,B={F:[10,30,'바탕 사실\n① ② ③ (3·4쪽)'],O:[240,30,'최적성 원리\n점마다 V (5쪽)'],BE:[470,30,'Bellman 식 (DP)\nV=min{c+V} (6쪽)'],BI:[700,30,'끝에서부터\n후방귀납 (7쪽)'],DPR:[930,30,'정책 = 점마다\n고를 화살표 (8쪽)'],
-      X:[10,200,'④ 기대값\n가격은 모른다 (9·10쪽)'],SB:[470,200,'Bellman 식 (SDP)\nmax{r+E[V]} (12쪽)'],PT:[700,200,'BESS 정책표\n(15~18쪽)'],RS:[930,200,'기대수익 145.2\n평균계획보다 +8.4%']};
+      X:[10,200,'④ 기대값\n확률이 있으면 (9쪽)'],SB:[470,200,'Bellman 식 (SDP)\nmax{r+E[V]} (13쪽)'],PT:[700,200,'BESS 정책표\n(16~19쪽)'],RS:[930,200,'기대수익 145.2\n평균계획보다 +8.4%']};
     function cy(k){return B[k][1]+h/2;}
     function link(a,b){var A=B[a],C=B[b];var x1,y1,x2,y2;
       if(A[1]===C[1]){x1=A[0]+w;y1=cy(a);x2=C[0];y2=cy(b);}else{x1=A[0]+w/2;y1=A[1]+h;x2=C[0]+w/2;y2=C[1];if(A[0]!==C[0]){x1=A[0]+w;y1=cy(a);x2=C[0];y2=cy(b);}}
