@@ -31,8 +31,10 @@ body.present .deck{padding:0;height:100vh;height:100dvh;justify-content:center}
 body.present .sw{display:none}
 body.present .sw.cur{display:block}
 body.present .slide{box-shadow:none}
-.pnav{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:none;gap:6px;z-index:25}
+.pnav{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:none;gap:6px;z-index:25}
 body.present .pnav{display:flex}
+.pnav{opacity:0;transition:opacity .3s}
+body.present.ui .pnav,.pnav:hover,.pnav:focus-within{opacity:1}
 .pnav button{font:600 13px var(--sans);background:var(--navy);color:var(--white);border:0;padding:8px 12px;border-radius:4px;cursor:pointer;opacity:.85}
 
 /* ===== slide chrome (산단공 양식) ===== */
@@ -1352,6 +1354,8 @@ svg#tnode{height:310px!important;width:100%}
   document.getElementById('pv').onclick=function(){show(cur-1)};
   document.getElementById('nx').onclick=function(){show(cur+1)};
   document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&document.body.classList.contains('present'))exit()});
+  var uiT;function wake(){if(!document.body.classList.contains('present'))return;document.body.classList.add('ui');clearTimeout(uiT);uiT=setTimeout(function(){document.body.classList.remove('ui');},1800);}
+  addEventListener('mousemove',wake);addEventListener('touchstart',wake,{passive:true});
   addEventListener('keydown',function(e){
     if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
     if(!document.body.classList.contains('present')){if(e.key==='f'||e.key==='F')enter();return}
