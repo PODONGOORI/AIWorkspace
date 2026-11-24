@@ -335,6 +335,7 @@ table.t.c.tight td,table.t.c.tight th{padding:5px 5px!important}
 .mini3 svg.tr{width:100%;height:auto}
 .mini3 .tr .cost{font-size:12.5px;stroke-width:4px}.mini3 .tr .vb{font-size:12.5px;stroke-width:4px}.mini3 .tr .nl{font-size:14px}
 body,.slide,.slide *{word-break:keep-all;overflow-wrap:break-word}
+svg#tnode{height:310px!important;width:100%}
 .mnote{margin:4px 0 0;font-size:14.5px;color:var(--g700);line-height:1.45}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
@@ -654,50 +655,14 @@ body,.slide,.slide *{word-break:keep-all;overflow-wrap:break-word}
 <section class="slide">
  <div class="hd"><span class="no">03</span><span class="tt"><span class="sec2">SDP 기초</span><span class="sep">|</span>기대값이 들어간 Bellman 방정식</span><span class="rule"></span></div>
  <div class="tag">SDP 기초</div>
- <div class="ins">DP 식과 똑같다. 다음 이정표 숫자를 확정할 수 없으니, 가능한 가격들로 평균 낸 값(기대값)을 쓴다</div>
+ <div class="ins">DP 식의 '다음 이정표' 자리에 기대값을 넣으면 SDP. 가격을 보고 나서 고르니 가격마다 답이 따로 나온다</div>
  <div class="bd" style="display:flex;flex-direction:column;gap:8px">
-  <div class="eq" style="font-size:21px;padding:8px 10px">\[ V_t(s,p)=\max_{a\in A(s)}\Big\{\underbrace{r(a,p)}_{\text{즉시 보상}}+\underbrace{\mathbb{E}_{p'}\big[V_{t+1}(s+a,\,p')\big]}_{\text{미래 가치의 기대값 (④)}}\Big\},\qquad V_{T+1}(\cdot)=\text{종료가치} \]</div>
-  <div class="two" style="flex:1;min-height:0;height:auto">
-   <div>
-    <div class="sub"><span class="num">1</span><span class="t">5가지 구성요소 (BESS 예제)</span></div>
-    <table class="t c tight">
-     <thead><tr><th>구성요소</th><th>BESS 예제에서는</th></tr></thead>
-     <tbody>
-      <tr><td class="k">단계 $t$</td><td class="l">1시간 단위, $T=3$</td></tr>
-      <tr><td class="k">상태 $s_t$</td><td class="l">SoC $\in\{0,1,2\}$ MWh + 이번 시간 가격 $p_t$</td></tr>
-      <tr><td class="k">결정 $a_t$</td><td class="l">충전 $+1$ / 대기 $0$ / 방전 $-1$ MWh</td></tr>
-      <tr><td class="k">전이</td><td class="l">$\mathrm{SoC}_{t+1}=\mathrm{SoC}_t+a_t$, 가격은 확률적</td></tr>
-      <tr><td class="k">보상 $r$</td><td class="l">충전 $-p$, 대기 $0$, 방전 $p-10$ (천원)</td></tr>
-     </tbody>
-    </table>
-   </div>
-   <div>
-    <div class="sub"><span class="num">2</span><span class="t">한 시간 안의 순서</span></div>
-    <div style="display:grid;grid-template-columns:1fr 18px 1fr 18px 1fr 18px 1fr;gap:4px;font-size:14px">
-     <div class="node nvf" style="height:58px"><b>① 관측</b><span>가격 $p_t$</span></div><span class="arr">→</span>
-     <div class="node nv" style="height:58px"><b>② 결정</b><span>$a_t$ 선택</span></div><span class="arr">→</span>
-     <div class="node" style="height:58px"><b>③ 정산</b><span>$r(a_t,p_t)$</span></div><span class="arr">→</span>
-     <div class="node gy" style="height:58px"><b>④ 전이</b><span>SoC 갱신</span></div>
-    </div>
-    <ul class="ul">
-     <li><b>④ 기대값</b> = 같은 상황을 여러 번 겪으면 평균적으로 받는 돈<span class="s">예: 180원(60%)·90원(40%)에 판다면 $0.6\times180+0.4\times90=144$</span></li>
-     <li><b>정책</b> = 가격까지 적힌 이정표<span class="s">"지금 SoC 1이고 가격이 80원이면 → 충전"</span></li>
-    </ul>
-   </div>
-  </div>
- </div>
- <div class="pg"></div>
-</section>
-
-<!-- 5b 노드 하나의 결정 -->
-<section class="slide">
- <div class="hd"><span class="no">03</span><span class="tt"><span class="sec2">SDP 기초</span><span class="sep">|</span>노드 하나에서 일어나는 일</span><span class="rule"></span></div>
- <div class="tag">SDP 기초</div>
- <div class="ins">화살표마다 '지금 버는 돈 + 도착한 곳의 가치'를 더하고, 가장 큰 쪽을 고른다. 이것이 Bellman 식이다</div>
- <div class="bd" style="display:flex;flex-direction:column;gap:10px">
+  <div class="eq" style="font-size:19px;padding:6px 10px">\[ V_t(s,p)=\max_{a\in A(s)}\Big\{\underbrace{r(a,p)}_{\text{지금 버는 돈}}+\underbrace{\mathbb{E}_{p'}\big[V_{t+1}(s+a,\,p')\big]}_{\text{도착한 곳의 이정표 (가격 평균)}}\Big\} \]</div>
   <svg class="tr" id="tnode" width="1152" height="300" viewBox="0 0 1152 300" role="img" aria-label="t=1, SoC 1, 가격 80원에서 충전·대기·방전 세 갈래의 값 비교"></svg>
-  <div class="eq sm">\[ V_1(1,\,80)=\max\Big\{\underbrace{-80+216}_{\text{충전}},\ \underbrace{0+134}_{\text{대기}},\ \underbrace{70+44.4}_{\text{방전}}\Big\}=136 \]</div>
-  <div class="note"><b>핵심</b>도착 노드의 가치(216, 134, 44.4)를 먼저 알아야 지금 고를 수 있다 → 그래서 마지막 시간부터 거꾸로 푼다</div>
+  <table class="t c tight">
+   <thead><tr><th>단계 $t$</th><th>상태 $s$</th><th>결정 $a$</th><th>전이</th><th>보상 $r(a,p)$</th></tr></thead>
+   <tbody><tr><td>1시간 단위, $T=3$</td><td>SoC $\{0,1,2\}$ MWh + 지금 가격 $p$</td><td>충전 $+1$ · 대기 $0$ · 방전 $-1$</td><td>SoC $+a$, 다음 가격은 확률적</td><td>충전 $-p$ · 방전 $p-10$ (천원)</td></tr></tbody>
+  </table>
  </div>
  <div class="pg"></div>
 </section>
@@ -1185,7 +1150,7 @@ body,.slide,.slide *{word-break:keep-all;overflow-wrap:break-word}
   // 합본: 지식 지도
   (function(){var svg=document.getElementById('g20');if(!svg)return;defs(svg);
     var w=170,h=62,B={F:[10,30,'바탕 사실\n① ② ③ (3·4쪽)'],O:[240,30,'최적성 원리\n점마다 V (5쪽)'],BE:[470,30,'Bellman 식 (DP)\nV=min{c+V} (6쪽)'],BI:[700,30,'끝에서부터\n후방귀납 (7쪽)'],DPR:[930,30,'정책 = 점마다\n고를 화살표 (8쪽)'],
-      X:[10,200,'④ 기대값\n확률이 있으면 (9쪽)'],SB:[470,200,'Bellman 식 (SDP)\nmax{r+E[V]} (13쪽)'],PT:[700,200,'BESS 정책표\n(16~19쪽)'],RS:[930,200,'기대수익 145.2\n평균계획보다 +8.4%']};
+      X:[10,200,'④ 기대값\n확률이 있으면 (9쪽)'],SB:[470,200,'Bellman 식 (SDP)\nmax{r+E[V]} (13쪽)'],PT:[700,200,'BESS 정책표\n(15~18쪽)'],RS:[930,200,'기대수익 145.2\n평균계획보다 +8.4%']};
     function cy(k){return B[k][1]+h/2;}
     function link(a,b){var A=B[a],C=B[b];var x1,y1,x2,y2;
       if(A[1]===C[1]){x1=A[0]+w;y1=cy(a);x2=C[0];y2=cy(b);}else{x1=A[0]+w/2;y1=A[1]+h;x2=C[0]+w/2;y2=C[1];if(A[0]!==C[0]){x1=A[0]+w;y1=cy(a);x2=C[0];y2=cy(b);}}
