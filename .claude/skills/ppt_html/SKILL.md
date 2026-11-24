@@ -36,6 +36,7 @@ description: PPT처럼 넘겨 보는 16:9 HTML 발표자료를 국회·공공기
 - PNG를 열어 글자 겹침, 잘린 표, 한 글자 줄넘김을 눈으로 확인한다. 측정으로는 그림 속 글자 겹침을 못 잡는다.
 
 ## 배포 메모
+- PDF가 필요하면 `node scripts/export_pdf.js 덱.html [출력.pdf]` (CDN이 막힌 환경이면 `--mathjax 로컬경로`). 슬라이드 1장이 PDF 1쪽(1280×720)이 되고, 툴바·발표 버튼은 빠진다.
 - 파일 첫 줄의 `<meta charset="utf-8">`은 지우지 않는다. 이게 없으면 메일 미리보기·아이패드 파일 앱처럼 UTF-8을 기본으로 가정하지 않는 곳에서 한글이 깨진다.
 - 메일 첨부 미리보기(Outlook 등)는 CSS·스크립트를 제대로 실행하지 못해 배치가 겹친다. 받은 사람은 파일을 Chrome·Safari·Edge로 열어야 한다고 안내한다.
 - 외부 리소스는 Google Fonts(Noto Sans KR)와 cdnjs의 MathJax 3.2.2만 쓴다. 나머지는 모두 인라인(이미지는 data URI).
