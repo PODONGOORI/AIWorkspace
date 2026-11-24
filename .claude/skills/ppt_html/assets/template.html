@@ -1,0 +1,356 @@
+<title>발표자료 제목</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800&display=swap">
+<style>
+/* ppt_html: 1280×720 고정 캔버스 보고서형 슬라이드. 화면 폭에 맞춰 축소, 인쇄물 양식이라 단일 라이트 테마. */
+:root{
+  /* 색 구성 (references/palette.md) */
+  --navy:#002060;   /* 메인: 핵심 메시지 바, 번호, 강조 노드, 표지 띠 */
+  --navy2:#03296a;  /* 활성 탭 */
+  --tint:#e6ebf5;   /* 강조 셀·강조 박스 바탕 */
+  --ink:#262626;    /* 본문 */
+  --g700:#404040;   /* 제목 글자, 표 굵은 선 */
+  --g600:#595959;   /* 보조 설명 */
+  --g500:#7f7f7f;   /* 축·보조선 */
+  --g400:#a6a6a6;   /* 비활성 글자, 기본 화살표 */
+  --g300:#bfbfbf;   /* 표 셀 선 */
+  --g200:#d9d9d9;   /* 표 머리, 구분선 */
+  --g150:#e7e7e7;
+  --g100:#f2f2f2;   /* 비활성 탭, 하단 요약 바 */
+  --g50:#f8f8f8;
+  --rail:#d8ded7;   /* 탭 옆 세로선 */
+  --muted:#878787;  /* 우측 상단 라벨, 쪽번호 */
+  --page:#e8eaed;   /* 슬라이드 바깥 */
+  --white:#fff;
+  --sans:"Noto Sans KR","Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",sans-serif;
+  --serif:"Times New Roman",Georgia,serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+body,.slide,.slide *{word-break:keep-all;overflow-wrap:break-word}   /* 한글은 단어 단위로만 줄바꿈 */
+
+/* ---------- 툴바 · 덱 · 발표 모드 ---------- */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--white)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:8px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--white);border-bottom:1px solid var(--g200)}
+.bar b{margin-right:auto;font-size:14px;color:var(--navy);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar button{font:inherit;font-size:13px;padding:7px 14px;border:1px solid var(--g300);background:var(--white);border-radius:6px;color:var(--ink);cursor:pointer;white-space:nowrap}
+button:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.deck{padding-block:24px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:center;gap:22px}
+.sw{width:calc(1280px * var(--s,1));height:calc(720px * var(--s,1));flex:none;max-width:100%}
+.slide{width:1280px;height:720px;position:relative;background:var(--white);overflow:hidden;transform-origin:0 0;transform:scale(var(--s,1));box-shadow:0 1px 3px rgba(0,0,0,.08),0 6px 18px rgba(0,0,0,.05)}
+body.present{background:#111;overflow:hidden}
+body.present .bar{display:none}
+body.present .deck{padding:0;height:100vh;height:100dvh;justify-content:center}
+body.present .sw{display:none}
+body.present .sw.cur{display:block}
+body.present .slide{box-shadow:none}
+.pnav{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:none;gap:6px;z-index:25}
+body.present .pnav{display:flex}
+.pnav button{font:600 13px var(--sans);background:var(--navy);color:var(--white);border:0;padding:8px 12px;border-radius:4px;cursor:pointer;opacity:.85}
+
+/* ---------- 슬라이드 틀 (좌표는 1280×720 기준) ---------- */
+.hd{position:absolute;left:85px;right:72px;top:34px;height:66px;display:flex;align-items:flex-end;gap:12px}
+.hd .no{font-size:46px;font-weight:400;color:var(--navy);letter-spacing:-1px;line-height:1}
+.hd .tt{font-size:30px;font-weight:700;color:var(--g700);line-height:1.1;white-space:nowrap;letter-spacing:-.8px}
+.hd .tt .sec2{font-weight:400}
+.hd .tt .sep{font-weight:300;margin:0 14px}
+.hd .rule{flex:1;min-width:30px;border-bottom:2px solid var(--g200);margin-bottom:24px}
+.tag{position:absolute;right:74px;top:51px;font-size:13px;color:var(--muted);text-align:right;line-height:1.25}
+.ins{position:absolute;left:73px;right:72px;top:110px;min-height:60px;background:var(--navy);color:var(--white);border-radius:8px;padding:10px 26px;font-size:16px;font-weight:700;line-height:1.35;display:flex;align-items:center;gap:14px;letter-spacing:-.4px}
+.ins::before{content:"\2713";font-weight:400;font-size:15px;opacity:.9}
+.tabs{position:absolute;left:66px;top:118px;bottom:46px;width:100px;display:flex;flex-direction:column;gap:10px}
+.tabs div{flex:1;background:var(--g100);color:var(--g400);border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;font-weight:700;line-height:1.3;letter-spacing:-.3px}
+.tabs .on{background:var(--navy2);color:var(--white);box-shadow:0 3px 6px rgba(0,0,0,.25)}
+.tabs::after{content:"";position:absolute;right:-15px;top:0;bottom:0;border-right:1.5px solid var(--rail)}
+.bd{position:absolute;left:85px;right:72px;top:190px;bottom:46px}
+.tb .ins{left:197px;right:68px}
+.tb .bd{left:197px;right:68px}
+.src{position:absolute;left:85px;bottom:20px;font-size:11.5px;color:var(--muted);letter-spacing:-.2px}
+.tb .src{left:197px}
+.pg{position:absolute;right:75px;bottom:20px;font-size:14px;color:var(--muted)}
+
+/* ---------- 표지 · 목차 ---------- */
+.cv .top{position:absolute;left:73px;right:72px;top:76px;border-bottom:2px solid var(--g200)}
+.cv .uni{position:absolute;right:75px;top:52px;font-size:12px;color:var(--g400)}
+.cv h1{position:absolute;left:85px;top:192px;margin:0;font-size:46px;line-height:1.28;color:var(--navy);font-weight:700;letter-spacing:-1.2px}
+.cv .cvsub{position:absolute;left:85px;top:268px;font-size:29px;font-weight:400;color:#626161;line-height:1.45;letter-spacing:-1px}
+.cv .ill{position:absolute;left:655px;top:375px;width:520px;height:230px}
+.cv .band{position:absolute;left:73px;right:72px;top:606px;height:76px;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:space-between;padding:0 30px;font-size:17px;font-weight:700;letter-spacing:-.5px}
+.toc2 .ill{position:absolute;left:62px;top:388px;width:650px;height:288px;transform:scaleX(-1)}
+.toc2 h2{position:absolute;left:130px;top:118px;margin:0;font-size:80px;font-weight:400;color:var(--navy);letter-spacing:-1px;line-height:1.1}
+.toc2 ol{position:absolute;left:668px;top:172px;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:22px;counter-reset:c}
+.toc2 li{counter-increment:c;font-size:23px;color:var(--ink);letter-spacing:-.6px;padding-left:54px;position:relative;line-height:1.3}
+.toc2 li::before{content:counter(c) ".";position:absolute;left:0;top:-6px;color:var(--navy);font-weight:400;font-size:36px}
+.toc2 li small{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+
+/* ---------- 본문 부품 ---------- */
+.two{display:grid;grid-template-columns:1fr 1fr;height:100%}
+.two.w6{grid-template-columns:1.25fr 1fr}
+.two>div{min-width:0;display:flex;flex-direction:column;gap:12px}
+.two>div:first-child{padding-right:28px}
+.two>div+div{padding-left:28px;border-left:1px solid var(--g200)}
+.split{flex:1;min-height:0;height:auto;border-top:1px solid var(--g200);padding-top:10px}   /* 그림 아래 두 칸 */
+.sub{display:flex;align-items:center;gap:6px;margin:0 0 10px}
+.sub .num{color:var(--navy);font-size:20px;font-weight:700}
+.sub span.t{font-size:20px;font-weight:700;color:var(--ink);letter-spacing:-.4px}
+.sub small{margin-left:auto;font-size:13px;color:var(--muted)}
+.ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px;font-size:18px;line-height:1.5;color:var(--ink);letter-spacing:-.4px}
+.ul>li{position:relative;padding-left:16px}
+.ul>li::before{content:"\2022";position:absolute;left:0;top:0;font-weight:700}
+.ul .s{display:block;font-size:15.5px;color:var(--g600);margin-top:3px}
+.lbl{font-size:12px;font-weight:700;color:var(--g500);letter-spacing:-.2px}
+.em{color:var(--navy);font-weight:700}
+.box{background:var(--white);border:1px solid var(--g200);border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,.12);padding:14px 18px}
+.box h4{margin:0 0 8px;font-size:17px;color:var(--ink);letter-spacing:-.3px}
+.note{position:absolute;left:0;right:0;bottom:0;min-height:46px;background:var(--g100);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:8px 18px;font-size:16px;color:var(--ink);letter-spacing:-.3px;text-align:center}
+.note b{color:var(--navy);margin-right:12px;white-space:nowrap}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card3{background:var(--white);border:1px solid var(--g200);border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,.10);padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+.card3 h4{margin:0;font-size:18px;color:var(--navy)}
+.card3 p{margin:0;font-size:16px;line-height:1.5}
+.card3 .ex{margin-top:auto;padding-top:6px;border-top:1px dashed var(--g300);color:var(--g700);font-size:15px}
+.colhd{background:var(--g200);color:var(--ink);font-weight:700;border-radius:10px 10px 0 0;border:1px solid var(--g300);border-bottom:0;height:40px;display:flex;align-items:center;justify-content:center;font-size:15.5px}
+.colhd.nv{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.colbd{border:1px solid var(--g300);border-radius:0 0 10px 10px;padding:14px 16px;background:var(--white)}
+.node{background:var(--white);border:1px solid var(--g300);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px 6px}
+.node.gy{background:var(--g50)}.node.nv{border:1.5px solid var(--navy)}.node.nvf{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.flow{display:flex;align-items:stretch;gap:.4em;font-size:15px}
+.flow>div{flex:1}
+.flow>span{align-self:center;color:var(--g400)}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--g700);align-items:center;flex-wrap:wrap}
+.legend i{display:inline-block;width:26px;height:0;border-top:3px solid var(--navy);vertical-align:middle;margin-right:5px}
+.legend i.w{border-color:var(--g400)}.legend i.d{border-top:3px dashed var(--g600)}.legend i.dsh{border-top:2px dashed var(--g300)}.legend i.hl{border-top:4px solid var(--navy)}
+details{background:var(--white);border:1px solid var(--g200);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:12px 16px;font-size:16px}
+details summary{cursor:pointer;font-weight:700;color:var(--navy)}
+details p{margin:6px 0 0;line-height:1.5}
+.eq{font-family:var(--serif);font-size:22px;text-align:center;padding:10px 12px;background:var(--white);border:1px solid var(--g200);border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.eq.sm{font-size:18px;padding:6px 10px}
+.eq mjx-container[display="true"]{margin:0!important}
+/* 가로 막대 */
+.hb{display:flex;flex-direction:column;gap:14px}
+.hb .r{display:grid;grid-template-columns:130px 1fr;gap:12px;align-items:center;font-size:16px;font-weight:700;color:var(--g700)}
+.hb .tr{background:var(--g100);height:40px}
+.hb .fl{height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:var(--white);font-size:15px;font-weight:700;background:var(--navy)}
+
+/* 표: 회색 머리 + 전체 격자 */
+table.t{border-collapse:collapse;width:100%;font-size:16px;font-variant-numeric:tabular-nums;letter-spacing:-.3px;border-top:1.5px solid var(--g700);border-bottom:1.5px solid var(--g700)}
+table.t th{background:var(--g200);color:var(--ink);font-weight:700;border:1px solid var(--g400);border-top:0;border-bottom:1px solid var(--g500);padding:10px}
+table.t td{border:1px solid var(--g300);padding:10px;text-align:center}
+table.t td.l{text-align:left}
+table.t td.k{font-weight:700}
+table.t td.best{background:var(--tint);color:var(--navy);font-weight:700}
+table.t td.v{font-weight:700;color:var(--navy)}
+table.t td.na{color:var(--g400)}
+table.t tr.sep td{border-top:1.5px solid var(--g600)}
+table.t.c td,table.t.c th{font-size:14px;padding:8px 5px}
+table.t.c.tight td,table.t.c.tight th{padding:5px}
+
+/* SVG 그림 */
+svg.tr{display:block;overflow:visible;width:100%;height:auto;max-width:100%}
+svg.tr text{font-family:var(--sans);letter-spacing:-.3px}
+.tr .nd{fill:var(--white);stroke:var(--g400);stroke-width:1.5}
+.tr .nd.st{stroke:var(--navy);stroke-width:3}
+.tr .nd.on{fill:var(--navy);stroke:var(--navy)}
+.tr .nd.dash{fill:var(--g50);stroke:var(--g300);stroke-dasharray:4 4}
+.tr .nl{font-size:18px;font-weight:700;fill:var(--ink)}.tr .nl.inv{fill:var(--white)}
+.tr .ax{font-size:13px;font-weight:700;fill:var(--navy)}.tr .ax.dim{fill:var(--g400)}
+.tr .e{fill:none;stroke-width:2;stroke:var(--g400)}
+.tr .e.hl{stroke:var(--navy);stroke-width:4.5}
+.tr .e.d{stroke:var(--g600);stroke-dasharray:6 4}
+.tr .e.gr{stroke:var(--g600);stroke-dasharray:7 5;stroke-width:3}
+.tr .e.f{stroke:var(--g200)}
+.tr .e.dsh{stroke:var(--g300);stroke-dasharray:5 5;stroke-width:1.5}
+.tr .mk.c{fill:var(--navy)}.tr .mk.w{fill:var(--g400)}.tr .mk.d{fill:var(--g600)}.tr .mk.f{fill:var(--g200)}
+.tr .cost{font-size:15px;font-weight:700;fill:var(--g700);paint-order:stroke;stroke:var(--white);stroke-width:5px;stroke-linejoin:round}
+.tr .cost.dim{fill:var(--g400)}.tr .cost.hi{fill:var(--navy)}
+.tr .vb{font-size:15px;font-weight:700;fill:var(--navy);paint-order:stroke;stroke:var(--white);stroke-width:5px;stroke-linejoin:round}
+.tr .bx{fill:var(--g50);stroke:var(--g200)}.tr .bx.on{fill:var(--navy);stroke:var(--navy)}.tr .bx.root{fill:var(--tint);stroke:var(--navy)}
+.tr .bt{font-size:15px;font-weight:700;fill:var(--ink)}.tr .bt.inv{fill:var(--white)}
+.tr .bt3{font-size:12.5px;fill:var(--g600)}
+.tr .grid{stroke:var(--g200)}.tr .tick{font-size:12px;fill:var(--g600)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["$","$"]],displayMath:[["\\[","\\]"]]},svg:{fontCache:"global"},options:{skipHtmlTags:["script","noscript","style","textarea","pre","button"]}};</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>
+
+<div class="bar"><b>발표자료 제목 · 부제</b><button id="bPresent" type="button">발표 모드 (F)</button></div>
+
+<div class="deck" id="deck">
+
+<!-- 표지 -->
+<section class="slide cv">
+ <div class="uni">소속</div><div class="top"></div>
+ <h1>발표 제목</h1>
+ <div class="cvsub">부제 첫 줄<br>부제 둘째 줄</div>
+ <img class="ill" alt="" src="{{COVER_ILL}}">
+ <div class="band"><span>발표일시 : 2026.00.00.</span><span>행사명 · 발표자</span></div>
+</section>
+
+<!-- 목차 -->
+<section class="slide toc2">
+ <div class="cv"><div class="uni">소속</div><div class="top"></div></div>
+ <img class="ill" alt="" src="{{COVER_ILL}}">
+ <h2>Contents</h2>
+ <ol>
+  <li>첫 장<small>한 줄 설명</small></li>
+  <li>둘째 장<small>한 줄 설명</small></li>
+  <li>셋째 장<small>한 줄 설명</small></li>
+ </ol>
+ <div class="pg"></div>
+</section>
+
+<!-- 기본형: 그림 위 + 아래 두 칸 + 하단 요약 바 -->
+<section class="slide">
+ <div class="hd"><span class="no">01</span><span class="tt"><span class="sec2">섹션</span><span class="sep">|</span>주제</span><span class="rule"></span></div>
+ <div class="tag">섹션</div>
+ <div class="ins">이 장의 결론 한 문장</div>
+ <div class="bd" style="display:flex;flex-direction:column;gap:8px">
+  <svg class="tr" id="fig1" width="1123" height="200" viewBox="0 0 1123 200" style="height:200px" role="img" aria-label="그림 설명"></svg>
+  <div class="two split" style="padding-bottom:54px">
+   <div>
+    <div class="sub"><span class="num">1</span><span class="t">소제목</span></div>
+    <ul class="ul"><li><b>핵심어</b>: 설명<span class="s">보조 설명</span></li></ul>
+   </div>
+   <div>
+    <div class="sub"><span class="num">2</span><span class="t">소제목</span></div>
+    <table class="t c tight"><thead><tr><th>항목</th><th>값</th></tr></thead><tbody><tr><td class="l">예</td><td class="best">1</td></tr></tbody></table>
+   </div>
+  </div>
+  <div class="note"><b>요약</b>이 장에서 기억할 한 줄</div>
+ </div>
+ <div class="pg"></div>
+</section>
+
+<!-- 탭형: 왼쪽 인덱스 탭 (단계 진행) -->
+<section class="slide tb">
+ <div class="hd"><span class="no">02</span><span class="tt"><span class="sec2">섹션</span><span class="sep">|</span>Step 1 · 주제</span><span class="rule"></span></div>
+ <div class="tag">섹션</div>
+ <div class="tabs" data-on="1" data-items="Step 1|Step 2|Step 3|정리"></div>
+ <div class="ins">이 단계의 결론 한 문장</div>
+ <div class="bd">
+  <div class="two w6">
+   <div><table class="t"><thead><tr><th>구분</th><th>내용</th></tr></thead><tbody><tr><td class="k">A</td><td class="l">설명</td></tr></tbody></table></div>
+   <div><ul class="ul"><li><b>관찰</b>: 설명</li></ul></div>
+  </div>
+ </div>
+ <div class="pg"></div>
+</section>
+
+</div>
+
+<div class="pnav"><button id="pv" type="button" aria-label="이전 슬라이드">◀</button><button id="nx" type="button" aria-label="다음 슬라이드">▶</button><button id="px" type="button">목록 보기</button></div>
+
+<script>
+(function(){
+  /* ---- 왼쪽 인덱스 탭: <div class="tabs" data-on="2" data-items="A|B|C"> (줄바꿈은 <br>) ---- */
+  document.querySelectorAll('.tabs').forEach(function(t){var on=+t.dataset.on,items=(t.dataset.items||'').split('|');
+    t.innerHTML=items.map(function(x,i){return '<div'+(i+1===on?' class="on"':'')+'>'+x+'</div>';}).join('');});
+
+  /* ---- 슬라이드 감싸기(축소용) ---- */
+  var deck=document.getElementById('deck');
+  var slides=[].slice.call(deck.querySelectorAll('section.slide'));
+  slides.forEach(function(s){var w=document.createElement('div');w.className='sw';s.parentNode.insertBefore(w,s);w.appendChild(s);});
+  var wraps=[].slice.call(deck.querySelectorAll('.sw'));
+
+  /* ---- SVG 도우미 ---- */
+  var NS='http://www.w3.org/2000/svg';
+  function E(n,a,txt){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+  function defs(svg){var d=E('defs',{});['c','w','d','f'].forEach(function(k){var m=E('marker',{id:svg.id+'-m'+k,viewBox:'0 0 10 10',refX:'8',refY:'5',markerUnits:'userSpaceOnUse',markerWidth:'11',markerHeight:'11',orient:'auto-start-reverse'});m.appendChild(E('path',{d:'M0,0 L10,5 L0,10 z','class':'mk '+k}));d.appendChild(m);});svg.appendChild(d);}
+  function arrow(svg,x1,y1,x2,y2,cls,k,r1,r2){var dx=x2-x1,dy=y2-y1,L=Math.sqrt(dx*dx+dy*dy)||1,ux=dx/L,uy=dy/L;
+    svg.appendChild(E('line',{x1:x1+ux*r1,y1:y1+uy*r1,x2:x2-ux*(r2+3),y2:y2-uy*(r2+3),'class':'e '+cls,'marker-end':'url(#'+svg.id+'-m'+k+')'}));}
+  function multiline(svg,x,y,txt,cls,lh){txt.split('\n').forEach(function(t,i){svg.appendChild(E('text',{x:x,y:y+i*(lh||18),'text-anchor':'middle','class':cls},t));});}
+  /* 노드 그래프: nodes {id:[열,행]}, edges [[from,to,'라벨']], 열·행 수는 자동.
+     옵션: W,H,padL,padR,padT,padB,r, cols[] (열 제목), ncls(id), val(id) 노드 위 숫자, ecls(e) 'w|hl|d|gr|f|dsh', elab(e), labAt(e) 라벨 위치 0~1 */
+  function graph(svg,o){
+    if(!svg)return {};while(svg.firstChild)svg.removeChild(svg.firstChild);defs(svg);
+    var N=o.nodes,nc=0,nr=0;for(var id in N){nc=Math.max(nc,N[id][0]+1);nr=Math.max(nr,N[id][1]+1);}
+    var W=o.W,H=o.H,pl=o.padL||70,pr=o.padR||70,pt=o.padT||50,pb=o.padB||40,R=o.r||24;
+    function X(c){return nc>1?pl+c*(W-pl-pr)/(nc-1):W/2;} function Y(r){return nr>1?pt+r*(H-pt-pb)/(nr-1):H/2;}
+    var P={};for(id in N)P[id]=[X(N[id][0]),Y(N[id][1])];
+    if(o.cols)o.cols.forEach(function(t,c){if(t)svg.appendChild(E('text',{x:X(c),y:16,'text-anchor':'middle','class':'ax'+(o.colcls?' '+o.colcls(c):'')},t));});
+    var labs=[];
+    (o.edges||[]).forEach(function(e){var a=P[e[0]],b=P[e[1]],c=o.ecls?o.ecls(e):'w';
+      var k=/(^| )(f|dsh)( |$)/.test(c)?'f':(/hl/.test(c)?'c':(/(^| )(d|gr)( |$)/.test(c)?'d':'w'));
+      arrow(svg,a[0],a[1],b[0],b[1],c,k,R,R);
+      var t=o.elab?o.elab(e):e[2];if(t==null||t==='')return;
+      var f=o.labAt?o.labAt(e):.5,mx=a[0]+(b[0]-a[0])*f,my=a[1]+(b[1]-a[1])*f+(b[1]>a[1]?18:-8);
+      labs.push(E('text',{x:mx,y:my,'text-anchor':'middle','class':'cost'+(/(f|dsh)/.test(c)?' dim':'')+(/hl/.test(c)?' hi':'')},String(t)));});
+    for(id in N){var cl=o.ncls?o.ncls(id):'',p=P[id];
+      svg.appendChild(E('circle',{cx:p[0],cy:p[1],r:R,'class':'nd '+cl}));
+      svg.appendChild(E('text',{x:p[0],y:p[1]+6,'text-anchor':'middle','class':'nl'+(/on/.test(cl)?' inv':'')},o.label?o.label(id):id));
+      var v=o.val?o.val(id):null;if(v!=null){var bottom=N[id][1]===nr-1&&nr>1;labs.push(E('text',{x:p[0],y:bottom?p[1]+R+20:p[1]-R-10,'text-anchor':'middle','class':'vb'},String(v)));}}
+    labs.forEach(function(l){svg.appendChild(l);});
+    return {P:P,X:X,Y:Y};
+  }
+  window.PPT={E:E,defs:defs,arrow:arrow,multiline:multiline,graph:graph};
+
+  /* ===== 덱별 그림은 여기에 ===== */
+  graph(document.getElementById('fig1'),{W:1123,H:200,padT:40,padB:34,nodes:{A:[0,1],B:[1,0],C:[1,2],D:[2,1]},
+    edges:[['A','B','3'],['A','C','5'],['B','D','2'],['C','D','1']],ecls:function(e){return e[0]==='A'&&e[1]==='B'||e[0]==='B'?'hl':'w';}});
+
+  /* ---- 소제목 번호 ①②… · 쪽번호 ---- */
+  var CIR=['','\u2460','\u2461','\u2462','\u2463','\u2464','\u2465'];
+  document.querySelectorAll('.sub .num').forEach(function(n){n.textContent=CIR[+n.textContent]||n.textContent;});
+  slides.forEach(function(sl,k){var pg=sl.querySelector('.pg');if(pg)pg.textContent=k+1;});
+
+  /* ---- 아래 여백 채우기: 칸마다 남은 높이를 표 행 높이 → 목록 글씨·간격 → 블록 간격 순으로 나눠 준다 ---- */
+  function botOf(el,base){var y=0,n=el;while(n&&n!==base){y+=n.offsetTop;n=n.offsetParent;}return y+el.offsetHeight;}
+  function topOf(el,base){var y=0,n=el;while(n&&n!==base){y+=n.offsetTop;n=n.offsetParent;}return y;}
+  var FILLED=[];
+  function fillAll(){
+    FILLED.forEach(function(f){f.el.style[f.k]='';});FILLED=[];
+    function setS(el,k,v){FILLED.push({el:el,k:k});el.style[k]=v;}
+    slides.forEach(function(sl){
+      var bd=sl.querySelector('.bd');if(!bd||bd.dataset.nofill!=null)return;
+      var note=bd.querySelector(':scope > .note');
+      var limit=note?topOf(note,bd)-14:bd.clientHeight;
+      var cols=[].slice.call(bd.querySelectorAll(':scope > .two > div'));if(!cols.length)cols=[bd];
+      cols.forEach(function(c){
+        function cb(){var m=0;[].forEach.call(c.children,function(ch){if(ch===note||ch.classList.contains('two'))return;m=Math.max(m,botOf(ch,bd));});return m;}
+        var gap=limit-cb();if(gap<8)return;
+        var tables=[].slice.call(c.querySelectorAll(':scope > table.t, :scope > div > table.t'));
+        var uls=[].slice.call(c.querySelectorAll(':scope > ul.ul'));
+        if(tables.length){var share=(uls.length?.6:.85)*gap/tables.length;tables.forEach(function(t){setS(t,'height',(t.offsetHeight+share)+'px');});}
+        gap=limit-cb();
+        if(gap>60&&uls.length){var fs=Math.min(20,18+gap/60);uls.forEach(function(u){setS(u,'fontSize',fs+'px');});gap=limit-cb();}
+        if(gap>8&&uls.length){var n=0;uls.forEach(function(u){n+=Math.max(1,u.children.length-1);});var add=Math.min(30,gap*.8/n);uls.forEach(function(u){setS(u,'gap',(12+add)+'px');});}
+        gap=limit-cb();
+        var kids=[].filter.call(c.children,function(ch){return ch!==note&&ch.offsetHeight>0;});
+        if(gap>8&&kids.length>1){var g0=parseFloat(getComputedStyle(c).rowGap)||0;setS(c,'gap',(g0+Math.min(c===bd?40:36,gap/(kids.length-1)))+'px');}
+      });
+    });
+  }
+  function runFill(){try{fillAll();}catch(e){}}
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise)MathJax.startup.promise.then(runFill);else addEventListener('load',runFill);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){setTimeout(runFill,50);});
+
+  /* ---- 축소 ---- */
+  function fit(){var present=document.body.classList.contains('present');
+    var s=present?Math.min(innerWidth/1280,innerHeight/720):Math.min(1,(deck.clientWidth-32)/1280);
+    document.documentElement.style.setProperty('--s',s);}
+  addEventListener('resize',fit);fit();
+
+  /* ---- 발표 모드 ---- */
+  var cur=0;
+  function show(i){cur=Math.max(0,Math.min(wraps.length-1,i));wraps.forEach(function(w,k){w.classList.toggle('cur',k===cur);});}
+  function enter(){var top=scrollY;cur=0;wraps.forEach(function(w,k){if(w.offsetTop-80<=top)cur=k;});document.body.classList.add('present');show(cur);fit();
+    try{var p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+  function exit(){document.body.classList.remove('present');fit();wraps[cur].scrollIntoView();
+    try{if(document.fullscreenElement){var p=document.exitFullscreen();if(p&&p.catch)p.catch(function(){});}}catch(e){}}
+  document.getElementById('bPresent').onclick=enter;
+  document.getElementById('px').onclick=exit;
+  document.getElementById('pv').onclick=function(){show(cur-1);};
+  document.getElementById('nx').onclick=function(){show(cur+1);};
+  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&document.body.classList.contains('present'))exit();});
+  addEventListener('keydown',function(e){
+    if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter'))return;
+    if(!document.body.classList.contains('present')){if(e.key==='f'||e.key==='F')enter();return;}
+    if(['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key)>-1){show(cur+1);e.preventDefault();}
+    else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)>-1){show(cur-1);e.preventDefault();}
+    else if(e.key==='Home')show(0);else if(e.key==='End')show(wraps.length-1);
+    else if(e.key==='Escape')exit();
+  });
+})();
+</script>
